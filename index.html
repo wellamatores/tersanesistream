@@ -3,569 +3,1266 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TERSANESI STREAM™ | Holographic Dashboard</title>
+  <title>TERSANESI STREAM™ · 3-Screen Dashboard</title>
   <style>
+    /* ================================================================
+       ROOT VARIABLES & RESET
+       ================================================================ */
     :root {
       --cyan: #00E5FF;
       --cyan-dim: #00B8D4;
-      --cyan-glow: rgba(0, 229, 255, 0.45);
+      --cyan-glow: rgba(0, 229, 255, 0.35);
       --orange: #FF9F43;
-      --orange-glow: rgba(255, 159, 67, 0.5);
+      --orange-glow: rgba(255, 159, 67, 0.4);
       --bg: #05060F;
-      --panel: rgba(6, 14, 28, 0.92);
-      --border: rgba(0, 229, 255, 0.22);
+      --panel: rgba(6, 14, 28, 0.88);
+      --border: rgba(0, 229, 255, 0.18);
       --text: #E0F7FA;
       --muted: #5A8A9C;
-      --radius: 6px;
+      --radius: 12px;
       --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
       --mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       background: var(--bg);
       font-family: var(--font);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
       color: var(--text);
       user-select: none;
     }
 
+    /* ================================================================
+       LOADING SCREEN
+       ================================================================ */
     .loading {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: var(--bg);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
       transition: opacity 0.7s ease;
     }
-    .loading.hidden { opacity: 0; pointer-events: none; }
-    .loading .logo {
-      font-size: 36px; font-weight: 300; letter-spacing: 8px;
-      color: var(--muted); margin-bottom: 18px;
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
-    .loading .logo strong { color: var(--cyan); font-weight: 700; }
+    .loading .logo {
+      font-size: 36px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .loading .logo strong {
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .loading .logo .tm {
+      font-size: 14px;
+      vertical-align: super;
+    }
     .loading .bar {
-      width: 180px; height: 2px;
-      background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;
+      width: 180px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
     }
     .loading .bar .fill {
-      height: 100%; width: 0%;
+      height: 100%;
+      width: 0%;
       background: linear-gradient(90deg, var(--cyan), var(--orange));
       transition: width 0.25s ease;
     }
     .loading .ver {
-      font-family: var(--mono); font-size: 10px;
-      color: var(--muted); margin-top: 14px; letter-spacing: 2px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 14px;
+      letter-spacing: 2px;
     }
 
+    /* ================================================================
+       DASHBOARD
+       ================================================================ */
     .dashboard {
-      width: 100vw; height: 100vh;
-      display: flex; flex-direction: column;
+      width: 100%;
+      height: 100vh;
+      max-height: 98vh;
+      display: flex;
+      flex-direction: column;
       background: radial-gradient(ellipse at 50% 40%, #0A1525 0%, #05060F 70%);
       position: relative;
       transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
     }
-
     .dashboard.curved {
       transform: perspective(1400px) rotateX(6deg) scale(0.96);
       transform-origin: center 60%;
     }
 
+    /* ================================================================
+       TOP BAR
+       ================================================================ */
     .top-bar {
-      height: 38px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: space-between;
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 0 16px;
-      background: rgba(4, 8, 16, 0.75);
+      background: rgba(4, 8, 16, 0.85);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 20;
+      flex-wrap: wrap;
+      gap: 4px;
     }
     .brand {
-      font-size: 15px; font-weight: 700; letter-spacing: 2.5px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
       color: var(--cyan);
       text-shadow: 0 0 18px var(--cyan-glow);
+      white-space: nowrap;
     }
-    .brand span { font-weight: 300; color: var(--muted); font-size: 11px; margin-left: 4px; }
-    .brand .tm { font-size: 9px; vertical-align: super; }
+    .brand span {
+      font-weight: 300;
+      color: var(--muted);
+      font-size: 11px;
+      margin-left: 4px;
+    }
+    .brand .tm {
+      font-size: 9px;
+      vertical-align: super;
+    }
 
     .top-controls {
-      display: flex; align-items: center; gap: 14px;
-      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      flex-wrap: wrap;
     }
     .top-controls .dot {
-      width: 5px; height: 5px; border-radius: 50%; display: inline-block; margin-right: 4px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
     }
-    .dot.live { background: var(--orange); box-shadow: 0 0 8px var(--orange-glow); }
-    .dot.online { background: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.4); }
-    .dot.cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+    .dot.live {
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange-glow);
+    }
+    .dot.online {
+      background: #4CAF50;
+      box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    }
+    .dot.cyan {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan-glow);
+    }
 
     .view-toggle {
-      display: flex; background: rgba(0,0,0,0.35);
-      border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+      display: flex;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
     }
     .view-toggle button {
-      background: transparent; border: none; color: var(--muted);
-      font-family: var(--mono); font-size: 9px; padding: 3px 10px;
-      cursor: pointer; transition: all 0.2s;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 8px;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
       letter-spacing: 0.5px;
     }
     .view-toggle button.active {
       background: rgba(0, 229, 255, 0.18);
       color: var(--cyan);
     }
-    .view-toggle button:hover:not(.active) { color: var(--text); }
+    .view-toggle button:hover:not(.active) {
+      color: var(--text);
+    }
 
+    /* ================================================================
+       SCREEN TOGGLE (for all screen sizes)
+       ================================================================ */
+    .screen-toggle {
+      display: flex;
+      gap: 3px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .screen-toggle button {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 7px;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 2px;
+      letter-spacing: 0.5px;
+    }
+    .screen-toggle button.active {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--cyan);
+    }
+    .screen-toggle button:hover:not(.active) {
+      color: var(--text);
+    }
+
+    /* ================================================================
+       MAIN LAYOUT
+       ================================================================ */
     .main {
-      flex: 1; display: flex; gap: 6px;
-      padding: 6px 10px; min-height: 0;
-    }
-
-    .col-left, .col-right {
-      width: 168px; flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 5px;
-      overflow-y: auto;
-    }
-    .col-center {
-      flex: 1; min-width: 0;
-      display: flex; flex-direction: column;
+      flex: 1;
+      display: flex;
+      gap: 6px;
+      padding: 6px 8px;
+      min-height: 0;
+      overflow: hidden;
       position: relative;
     }
 
-    .widget {
+    /* ================================================================
+       SCREEN LAYERS (all 3 screens)
+       ================================================================ */
+    .screen-layer {
+      display: none;
+      width: 100%;
+      height: 100%;
+      gap: 6px;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    .screen-layer.active {
+      display: flex;
+    }
+
+    /* ===== COLUMNS ===== */
+    .col-left,
+    .col-right {
+      width: 180px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-y: auto;
+    }
+    .col-center {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      position: relative;
+    }
+
+    /* ================================================================
+       PANELS (WIDGETS)
+       ================================================================ */
+    .panel {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: 0 0 24px rgba(0, 229, 255, 0.04), inset 0 0 16px rgba(0, 229, 255, 0.03);
-      display: flex; flex-direction: column;
-      overflow: hidden; position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
       transition: border-color 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
     }
-    .widget:hover {
+    .panel:hover {
       border-color: rgba(0, 229, 255, 0.45);
       box-shadow: 0 0 32px rgba(0, 229, 255, 0.12);
     }
-    .widget-h {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 2px 7px; min-height: 18px;
-      background: rgba(0,0,0,0.25);
+    .panel-h {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 7px;
+      min-height: 18px;
+      background: rgba(0, 0, 0, 0.25);
       border-bottom: 1px solid rgba(0, 229, 255, 0.08);
-      font-size: 7px; letter-spacing: 0.6px; text-transform: uppercase;
-      color: var(--muted); font-weight: 600;
+      font-size: 7px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
     }
-    .widget-b {
-      flex: 1; padding: 4px 7px 5px;
-      display: flex; flex-direction: column; justify-content: center;
+    .panel-b {
+      flex: 1;
+      padding: 4px 7px 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    .w1 { height: 78px; }
-    .w2 { height: 58px; }
-    .w3 { height: 58px; }
-    .w4 { height: 62px; }
-    .w5 { height: 62px; }
-    .w6 { height: 58px; }
-    .w7 { height: 62px; }
-    .w8 { height: 58px; }
-    .w9 { height: 70px; }
-    .w10 { height: 58px; }
-    .w11 { height: 70px; }
+    /* ===== PANEL SIZES ===== */
+    .p1 {
+      height: 78px;
+    }
+    .p2 {
+      height: 58px;
+    }
+    .p3 {
+      height: 58px;
+    }
+    .p4 {
+      height: 62px;
+    }
+    .p5 {
+      height: 62px;
+    }
+    .p6 {
+      height: 58px;
+    }
+    .p7 {
+      height: 62px;
+    }
+    .p8 {
+      height: 58px;
+    }
+    .p9 {
+      height: 70px;
+    }
+    .p10 {
+      height: 58px;
+    }
+    .p11 {
+      height: 70px;
+    }
 
+    /* ================================================================
+       TYPOGRAPHY
+       ================================================================ */
     .num {
-      font-family: var(--mono); font-weight: 700; line-height: 1;
+      font-family: var(--mono);
+      font-weight: 700;
+      line-height: 1;
       text-align: center;
       text-shadow: 0 0 16px var(--cyan-glow);
     }
-    .num.lg { font-size: 26px; color: var(--cyan); }
-    .num.md { font-size: 20px; color: var(--cyan); }
-    .num.amber { color: var(--orange); text-shadow: 0 0 14px var(--orange-glow); }
-    .num.green { color: #66BB6A; text-shadow: 0 0 12px rgba(102,187,106,0.4); }
+    .num.lg {
+      font-size: 26px;
+      color: var(--cyan);
+    }
+    .num.md {
+      font-size: 20px;
+      color: var(--cyan);
+    }
+    .num.amber {
+      color: var(--orange);
+      text-shadow: 0 0 14px var(--orange-glow);
+    }
+    .num.green {
+      color: #66BB6A;
+      text-shadow: 0 0 12px rgba(102, 187, 106, 0.4);
+    }
 
     .label {
-      font-size: 7px; color: var(--muted); text-align: center;
-      letter-spacing: 0.8px; text-transform: uppercase; margin-top: 2px;
+      font-size: 7px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-top: 2px;
     }
     .sub {
-      font-size: 7px; color: var(--cyan-dim); text-align: center;
-      opacity: 0.8; margin-top: 1px;
+      font-size: 7px;
+      color: var(--cyan-dim);
+      text-align: center;
+      opacity: 0.8;
+      margin-top: 1px;
     }
 
+    /* ================================================================
+       BARS
+       ================================================================ */
     .bars {
-      display: flex; align-items: flex-end; justify-content: center;
-      gap: 2px; height: 28px; padding: 2px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+      height: 28px;
+      padding: 2px 0;
     }
     .bars span {
-      flex: 1; max-width: 10px; border-radius: 1px 1px 0 0;
-      min-height: 2px; transition: height 0.5s ease;
+      flex: 1;
+      max-width: 10px;
+      border-radius: 1px 1px 0 0;
+      min-height: 2px;
+      transition: height 0.5s ease;
     }
-    .bars .c { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
-    .bars .o { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
-    .bars .p { background: #AB47BC; }
+    .bars .c {
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan-glow);
+    }
+    .bars .o {
+      background: var(--orange);
+      box-shadow: 0 0 6px var(--orange-glow);
+    }
+    .bars .p {
+      background: #AB47BC;
+    }
 
+    /* ================================================================
+       METRICS
+       ================================================================ */
     .metrics {
-      display: flex; justify-content: space-around; gap: 2px;
+      display: flex;
+      justify-content: space-around;
+      gap: 2px;
     }
-    .metrics .m { text-align: center; flex: 1; }
+    .metrics .m {
+      text-align: center;
+      flex: 1;
+    }
     .metrics .m .v {
-      font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
     }
-    .metrics .m .v.a { color: var(--orange); }
-    .metrics .m .v.g { color: #66BB6A; }
-    .metrics .m .v.r { color: #EF5350; }
+    .metrics .m .v.a {
+      color: var(--orange);
+    }
+    .metrics .m .v.g {
+      color: #66BB6A;
+    }
+    .metrics .m .v.r {
+      color: #EF5350;
+    }
     .metrics .m .l {
-      font-size: 5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px;
+      font-size: 5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
+    /* ================================================================
+       STATUS ROW
+       ================================================================ */
     .status-row {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .ring {
-      width: 26px; height: 26px; border-radius: 50%;
-      border: 2px solid rgba(0,229,255,0.15);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 229, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
     }
     .ring::before {
-      content: ''; position: absolute; inset: -2px;
-      border-radius: 50%; border: 2px solid transparent;
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      border: 2px solid transparent;
       border-top-color: var(--cyan);
       animation: spin 2.8s linear infinite;
     }
     .ring .inner {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: rgba(0,229,255,0.08);
-      font-family: var(--mono); font-size: 5px; font-weight: 700;
-      color: var(--cyan); display: flex; align-items: center; justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(0, 229, 255, 0.08);
+      font-family: var(--mono);
+      font-size: 5px;
+      font-weight: 700;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
+    /* ================================================================
+       CHANNELS
+       ================================================================ */
     .channels {
-      display: flex; flex-wrap: wrap; gap: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
     }
     .ch {
-      font-size: 7px; padding: 1px 5px; border-radius: 3px;
-      background: rgba(0,229,255,0.06); color: var(--muted);
+      font-size: 7px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(0, 229, 255, 0.06);
+      color: var(--muted);
       font-family: var(--mono);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
     }
-    .ch.on { background: rgba(0,229,255,0.15); color: var(--cyan); }
+    .ch.on {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--cyan);
+    }
+    .ch:hover {
+      background: rgba(0, 229, 255, 0.12);
+    }
 
+    /* ================================================================
+       GLOBE
+       ================================================================ */
     .globe-wrap {
-      flex: 1; position: relative;
+      flex: 1;
+      position: relative;
       background: radial-gradient(ellipse at center, #06101C 0%, #020208 100%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: inset 0 0 60px rgba(0, 180, 255, 0.06);
-      min-height: 180px;
+      min-height: 140px;
     }
-    #globeCanvas {
-      width: 100%; height: 100%; display: block;
+    #globeCanvas,
+    #globeCanvas2,
+    #globeCanvas3 {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .globe-label {
-      position: absolute; bottom: 10px; left: 50%;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
       transform: translateX(-50%);
-      font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+      font-family: var(--mono);
+      font-size: 7px;
+      letter-spacing: 2px;
       color: var(--muted);
-      background: rgba(0,0,0,0.55);
-      padding: 3px 12px; border-radius: 12px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 3px 12px;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      pointer-events: none; z-index: 5;
+      pointer-events: none;
+      z-index: 5;
     }
-
     .globe-legend {
-      position: absolute; bottom: 10px; right: 10px;
-      font-family: var(--mono); font-size: 7px; color: var(--muted);
-      background: rgba(0,0,0,0.45); padding: 4px 8px;
-      border-radius: 4px; border: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 2px;
-      pointer-events: none; z-index: 5;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-family: var(--mono);
+      font-size: 6px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      pointer-events: none;
+      z-index: 5;
     }
-    .globe-legend span { display: flex; align-items: center; gap: 4px; }
+    .globe-legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .globe-legend i {
-      width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
     }
-    .globe-legend .c { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
-    .globe-legend .o { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
+    .globe-legend .c {
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan-glow);
+    }
+    .globe-legend .o {
+      background: var(--orange);
+      box-shadow: 0 0 6px var(--orange-glow);
+    }
 
     .mini-globe {
-      position: absolute; bottom: 12px; left: 12px;
-      width: 90px; height: 90px;
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      border: 1px solid rgba(0,229,255,0.3);
-      overflow: hidden; z-index: 8;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-      cursor: pointer; transition: transform 0.25s, border-color 0.25s;
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      overflow: hidden;
+      z-index: 8;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.25s, border-color 0.25s;
       background: radial-gradient(ellipse at center, #06101C, #020208);
     }
     .mini-globe:hover {
       transform: scale(1.06);
       border-color: var(--cyan);
     }
-    #miniCanvas { width: 100%; height: 100%; display: block; border-radius: 50%; }
+    #miniCanvas,
+    #miniCanvas2,
+    #miniCanvas3 {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 50%;
+    }
     .mini-label {
-      position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
-      font-family: var(--mono); font-size: 5px; letter-spacing: 1px;
-      color: var(--muted); background: rgba(0,0,0,0.6);
-      padding: 1px 6px; border-radius: 6px; pointer-events: none;
+      position: absolute;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 5px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1px 6px;
+      border-radius: 6px;
+      pointer-events: none;
     }
 
+    /* ================================================================
+       BOTTOM BAR
+       ================================================================ */
     .bottom {
-      height: 64px; flex-shrink: 0;
-      display: flex; gap: 5px;
-      padding: 0 10px 6px;
+      height: 64px;
+      flex-shrink: 0;
+      display: flex;
+      gap: 5px;
+      padding: 0 8px 6px;
     }
-    .bottom .widget { flex: 1; min-width: 0; height: 100%; }
-
+    .bottom .panel {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+    }
     .bottom .row {
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      font-size: 8px; color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 8px;
+      color: var(--muted);
     }
     .bottom .tag {
-      font-family: var(--mono); font-size: 6px;
-      background: rgba(0,229,255,0.08); padding: 1px 5px;
-      border-radius: 2px; color: var(--muted);
+      font-family: var(--mono);
+      font-size: 6px;
+      background: rgba(0, 229, 255, 0.08);
+      padding: 1px 5px;
+      border-radius: 2px;
+      color: var(--muted);
     }
     .bottom .badge {
-      width: 16px; height: 16px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 5px; font-weight: 700; color: #05060F;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5px;
+      font-weight: 700;
+      color: #05060F;
     }
-    .bottom .badge.eu { background: var(--cyan); }
-    .bottom .badge.br { background: var(--orange); }
-    .bottom .badge.ai { background: #AB47BC; }
+    .bottom .badge.eu {
+      background: var(--cyan);
+    }
+    .bottom .badge.br {
+      background: var(--orange);
+    }
+    .bottom .badge.ai {
+      background: #AB47BC;
+    }
 
     .forecast-num {
-      font-family: var(--mono); font-size: 18px; font-weight: 700;
-      color: var(--orange); text-shadow: 0 0 12px var(--orange-glow);
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--orange);
+      text-shadow: 0 0 12px var(--orange-glow);
     }
     .progress {
-      flex: 1; height: 3px; background: rgba(255,255,255,0.06);
-      border-radius: 2px; overflow: hidden;
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
     }
     .progress .fill {
-      height: 100%; width: 78%;
+      height: 100%;
+      width: 78%;
       background: linear-gradient(90deg, var(--orange), #EF5350);
       border-radius: 2px;
     }
 
+    /* ================================================================
+       FOOTER
+       ================================================================ */
     .footer {
-      height: 20px; flex-shrink: 0;
-      display: flex; justify-content: space-between; align-items: center;
+      height: 20px;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 0 14px;
       background: rgba(4, 8, 16, 0.7);
-      border-top: 1px solid rgba(0,229,255,0.1);
-      font-family: var(--mono); font-size: 7px; color: var(--muted);
+      border-top: 1px solid rgba(0, 229, 255, 0.1);
+      font-family: var(--mono);
+      font-size: 7px;
+      color: var(--muted);
       letter-spacing: 0.4px;
     }
-    .footer .r { display: flex; gap: 12px; align-items: center; }
-
-    ::-webkit-scrollbar { width: 3px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-    @media (max-width: 1200px) {
-      .col-left, .col-right { width: 140px; }
-      .num.lg { font-size: 22px; }
-      .mini-globe { width: 70px; height: 70px; }
+    .footer .r {
+      display: flex;
+      gap: 12px;
+      align-items: center;
     }
+
+    /* ================================================================
+       SCROLLBAR
+       ================================================================ */
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+
+    /* --- Medium screens: reduce column widths --- */
+    @media (max-width: 1200px) {
+      .col-left,
+      .col-right {
+        width: 140px;
+      }
+      .num.lg {
+        font-size: 22px;
+      }
+      .mini-globe {
+        width: 64px;
+        height: 64px;
+      }
+    }
+
+    /* --- Small screens: stack columns vertically --- */
     @media (max-width: 900px) {
-      .col-left, .col-right { width: 110px; }
-      .num.lg { font-size: 18px; }
-      .bottom { height: 52px; }
+      .screen-layer {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .col-left,
+      .col-right,
+      .col-center {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y: visible;
+      }
+      .col-left .panel,
+      .col-right .panel,
+      .col-center .panel {
+        flex-shrink: 0;
+      }
+      .col-center .globe-wrap {
+        min-height: 200px;
+        flex: 1;
+      }
+      .top-controls .hide-mobile {
+        display: none;
+      }
+      .bottom {
+        height: 52px;
+        flex-wrap: wrap;
+      }
+      .bottom .panel {
+        min-width: 60px;
+        flex: 1 1 80px;
+      }
+      .mini-globe {
+        width: 56px;
+        height: 56px;
+        bottom: 8px;
+        left: 8px;
+      }
+      .globe-legend {
+        display: none;
+      }
+      .globe-label {
+        font-size: 6px;
+        padding: 2px 8px;
+        bottom: 6px;
+      }
+      .main {
+        padding: 4px 6px;
+        gap: 4px;
+      }
+      .dashboard {
+        max-height: 100vh;
+        border-radius: 8px;
+      }
+      .top-bar {
+        height: 40px;
+        padding: 0 10px;
+      }
+      .brand {
+        font-size: 13px;
+      }
+    }
+
+    /* --- Very small screens: compact --- */
+    @media (max-width: 600px) {
+      .bottom {
+        height: 44px;
+      }
+      .bottom .panel {
+        flex: 1 1 50px;
+        min-width: 40px;
+      }
+      .bottom .row {
+        font-size: 6px;
+        gap: 3px;
+      }
+      .bottom .tag {
+        font-size: 5px;
+        padding: 0 3px;
+      }
+      .bottom .badge {
+        width: 12px;
+        height: 12px;
+        font-size: 4px;
+      }
+      .forecast-num {
+        font-size: 14px;
+      }
+      .metrics .m .v {
+        font-size: 10px;
+      }
+      .num.lg {
+        font-size: 18px;
+      }
+      .num.md {
+        font-size: 14px;
+      }
+      .panel-h {
+        font-size: 6px;
+        min-height: 14px;
+      }
+      .panel-b {
+        padding: 2px 4px 3px;
+      }
+      .bars {
+        height: 20px;
+        gap: 1px;
+      }
+      .bars span {
+        max-width: 6px;
+      }
+      .globe-wrap {
+        min-height: 120px;
+      }
+      .mini-globe {
+        width: 44px;
+        height: 44px;
+        bottom: 6px;
+        left: 6px;
+      }
+      .footer {
+        font-size: 5px;
+        height: 16px;
+        padding: 0 8px;
+      }
+      .footer .r {
+        gap: 6px;
+      }
+      .top-controls {
+        font-size: 7px;
+        gap: 6px;
+      }
+      .view-toggle button {
+        font-size: 6px;
+        padding: 1px 5px;
+      }
+      .screen-toggle button {
+        font-size: 6px;
+        padding: 1px 5px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="loading" id="loading">
+  <!-- ===== LOADING SCREEN ===== -->
+  <div class="loading" id="loading" role="status" aria-label="Loading">
     <div class="logo">TERSANESI <strong>STREAM</strong><span class="tm">™</span></div>
     <div class="bar"><div class="fill" id="loadFill"></div></div>
-    <div class="ver">Holographic Dashboard · v5.0</div>
+    <div class="ver">3-Screen Dashboard · v6.0</div>
   </div>
 
-  <div class="dashboard" id="dashboard">
+  <!-- ===== DASHBOARD ===== -->
+  <div class="dashboard" id="dashboard" role="main">
 
-    <div class="top-bar">
+    <!-- TOP BAR -->
+    <header class="top-bar" role="banner">
       <div class="brand">TERSANESI <span>STREAM</span><span class="tm">™</span></div>
       <div class="top-controls">
-        <span><i class="dot live"></i>LIVE</span>
-        <span><i class="dot cyan"></i>41,622 EVENTS</span>
-        <span><i class="dot online"></i>AI ONLINE</span>
-        <span id="clock">14:22 CET</span>
-        <div class="view-toggle">
-          <button id="btnFlat" class="active">FLAT</button>
-          <button id="btnCurved">CURVED</button>
+        <span><i class="dot live" aria-hidden="true"></i>LIVE</span>
+        <span class="hide-mobile"><i class="dot cyan" aria-hidden="true"></i>41,622 EVENTS</span>
+        <span><i class="dot online" aria-hidden="true"></i>AI ONLINE</span>
+        <span id="clock" class="hide-mobile">14:22 CET</span>
+        <div class="view-toggle" role="group" aria-label="View toggle">
+          <button id="btnFlat" class="active" type="button">FLAT</button>
+          <button id="btnCurved" type="button">CURVED</button>
+        </div>
+        <div class="screen-toggle" id="screenToggle" role="group" aria-label="Screen toggle">
+          <button class="active" data-screen="0" type="button">📊</button>
+          <button data-screen="1" type="button">🌍</button>
+          <button data-screen="2" type="button">🔮</button>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div class="main">
+    <!-- MAIN CONTENT -->
+    <div class="main" id="mainContent">
 
-      <div class="col-left">
-        <div class="widget w1">
-          <div class="widget-h">◈ GLOBAL STREAM</div>
-          <div class="widget-b">
-            <div class="num lg">1.15221</div>
-            <div class="label">Primary Index</div>
-            <div class="sub">↑ 12.4% · LIVE</div>
-          </div>
-        </div>
-        <div class="widget w2">
-          <div class="widget-h">⚡ EVENTS / MIN</div>
-          <div class="widget-b">
-            <div class="num md amber">4.822</div>
-            <div class="label">Throughput</div>
-            <div class="sub">Peak 6.1K</div>
-          </div>
-        </div>
-        <div class="widget w3">
-          <div class="widget-h">🤖 AI CONFIDENCE</div>
-          <div class="widget-b">
-            <div class="num md green">94.2%</div>
-            <div class="label">Model Score</div>
-            <div class="sub">↑ 2.1%</div>
-          </div>
-        </div>
-        <div class="widget w4">
-          <div class="widget-h">📈 FREQUENCY</div>
-          <div class="widget-b">
-            <div class="bars" id="barsFreq">
-              <span class="c" style="height:40%"></span>
-              <span class="c" style="height:65%"></span>
-              <span class="c" style="height:80%"></span>
-              <span class="c" style="height:50%"></span>
-              <span class="c" style="height:90%"></span>
-              <span class="c" style="height:70%"></span>
-              <span class="c" style="height:55%"></span>
-              <span class="c" style="height:95%"></span>
-              <span class="c" style="height:45%"></span>
-              <span class="c" style="height:75%"></span>
+      <!-- ============================================================
+           SCREEN 1: ANALYTICS (full 3-column layout)
+           ============================================================ -->
+      <div class="screen-layer active" data-screen="0">
+
+        <!-- LEFT COLUMN -->
+        <aside class="col-left" role="complementary" aria-label="Left panel metrics">
+          <div class="panel p1">
+            <div class="panel-h">◈ GLOBAL STREAM</div>
+            <div class="panel-b">
+              <div class="num lg">1.15221</div>
+              <div class="label">Primary Index</div>
+              <div class="sub">↑ 12.4% · LIVE</div>
             </div>
           </div>
-        </div>
-        <div class="widget w5">
-          <div class="widget-h">🔥 HEATMAP</div>
-          <div class="widget-b">
-            <div class="bars" id="barsHeat">
-              <span class="o" style="height:30%"></span>
-              <span class="o" style="height:55%"></span>
-              <span class="o" style="height:75%"></span>
-              <span class="o" style="height:90%"></span>
-              <span class="o" style="height:60%"></span>
-              <span class="o" style="height:40%"></span>
-              <span class="o" style="height:85%"></span>
-              <span class="o" style="height:70%"></span>
-              <span class="o" style="height:50%"></span>
-              <span class="o" style="height:65%"></span>
+
+          <div class="panel p2">
+            <div class="panel-h">⚡ EVENTS / MIN</div>
+            <div class="panel-b">
+              <div class="num md amber">4.822</div>
+              <div class="label">Throughput</div>
+              <div class="sub">Peak 6.1K</div>
             </div>
           </div>
-        </div>
-        <div class="widget w6">
-          <div class="widget-h">◈ STATUS</div>
-          <div class="widget-b">
-            <div class="status-row">
-              <div class="ring"><div class="inner">SYS</div></div>
-              <div>
-                <div style="font-size:10px;font-weight:600;color:#66BB6A;">● ACTIVE</div>
-                <div style="font-size:6px;color:var(--muted);">All nodes online</div>
+
+          <div class="panel p3">
+            <div class="panel-h">🤖 AI CONFIDENCE</div>
+            <div class="panel-b">
+              <div class="num md green">94.2%</div>
+              <div class="label">Model Score</div>
+              <div class="sub">↑ 2.1%</div>
+            </div>
+          </div>
+
+          <div class="panel p4">
+            <div class="panel-h">📈 FREQUENCY</div>
+            <div class="panel-b">
+              <div class="bars" aria-hidden="true">
+                <span class="c" style="height:40%"></span>
+                <span class="c" style="height:65%"></span>
+                <span class="c" style="height:80%"></span>
+                <span class="c" style="height:50%"></span>
+                <span class="c" style="height:90%"></span>
+                <span class="c" style="height:70%"></span>
+                <span class="c" style="height:55%"></span>
+                <span class="c" style="height:95%"></span>
+                <span class="c" style="height:45%"></span>
+                <span class="c" style="height:75%"></span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="col-center">
-        <div class="globe-wrap" id="globeWrap">
-          <canvas id="globeCanvas"></canvas>
-          <div class="globe-label">● GLOBAL EVENT MONITORING</div>
-          <div class="globe-legend">
-            <span><i class="c"></i> Active</span>
-            <span><i class="o"></i> High Impact</span>
-          </div>
-          <div class="mini-globe" id="miniWrap" title="Focus Earth">
-            <canvas id="miniCanvas"></canvas>
-            <div class="mini-label">GLOBE</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-right">
-        <div class="widget w7">
-          <div class="widget-h">📊 DISTRIBUTION</div>
-          <div class="widget-b">
-            <div class="bars">
-              <span class="p" style="height:55%"></span>
-              <span class="c" style="height:80%"></span>
-              <span class="o" style="height:45%"></span>
-              <span class="c" style="height:70%"></span>
-              <span class="p" style="height:60%"></span>
-              <span class="o" style="height:90%"></span>
-              <span class="c" style="height:50%"></span>
-              <span class="p" style="height:65%"></span>
-            </div>
-          </div>
-        </div>
-        <div class="widget w8">
-          <div class="widget-h">📊 METRICS</div>
-          <div class="widget-b">
-            <div class="metrics">
-              <div class="m"><div class="v">72%</div><div class="l">Load</div></div>
-              <div class="m"><div class="v a">94%</div><div class="l">Acc</div></div>
-              <div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div>
-              <div class="m"><div class="v r">3</div><div class="l">Crit</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="widget w9">
-          <div class="widget-h">⚡ AI STATUS</div>
-          <div class="widget-b">
-            <div class="status-row">
-              <div class="ring"><div class="inner">AI</div></div>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:#66BB6A;">● ONLINE</div>
-                <div style="font-size:6px;color:var(--muted);">Active · 94.2%</div>
+          <div class="panel p5">
+            <div class="panel-h">🔥 HEATMAP</div>
+            <div class="panel-b">
+              <div class="bars" aria-hidden="true">
+                <span class="o" style="height:30%"></span>
+                <span class="o" style="height:55%"></span>
+                <span class="o" style="height:75%"></span>
+                <span class="o" style="height:90%"></span>
+                <span class="o" style="height:60%"></span>
+                <span class="o" style="height:40%"></span>
+                <span class="o" style="height:85%"></span>
+                <span class="o" style="height:70%"></span>
+                <span class="o" style="height:50%"></span>
+                <span class="o" style="height:65%"></span>
               </div>
             </div>
           </div>
-        </div>
-        <div class="widget w10">
-          <div class="widget-h">◈ SIGNAL</div>
-          <div class="widget-b">
-            <div class="bars">
-              <span class="c" style="height:35%"></span>
-              <span class="c" style="height:60%"></span>
-              <span class="c" style="height:45%"></span>
-              <span class="c" style="height:80%"></span>
-              <span class="c" style="height:55%"></span>
-              <span class="c" style="height:70%"></span>
-              <span class="c" style="height:90%"></span>
-              <span class="c" style="height:40%"></span>
-            </div>
-          </div>
-        </div>
-        <div class="widget w11">
-          <div class="widget-h">🌍 CHANNELS</div>
-          <div class="widget-b" style="padding:3px 5px;">
-            <div class="channels">
-              <span class="ch on">🌍 4.8K</span>
-              <span class="ch">🚀 1.2K</span>
-              <span class="ch">🌊 892</span>
-              <span class="ch">🤖 2.4K</span>
-              <span class="ch">🔬 678</span>
-              <span class="ch">📈 3.1K</span>
-              <span class="ch">🏛️ 1.9K</span>
-              <span class="ch">🎯 412</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="bottom">
-      <div class="widget">
-        <div class="widget-h">🧠 INTELLIGENCE</div>
-        <div class="widget-b">
+          <div class="panel p6">
+            <div class="panel-h">◈ STATUS</div>
+            <div class="panel-b">
+              <div class="status-row">
+                <div class="ring"><div class="inner">SYS</div></div>
+                <div>
+                  <div style="font-size:10px;font-weight:600;color:#66BB6A;">● ACTIVE</div>
+                  <div style="font-size:6px;color:var(--muted);">All nodes online</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- CENTER COLUMN: GLOBE -->
+        <section class="col-center" role="main" aria-label="Global event monitoring globe">
+          <div class="globe-wrap" id="globeWrap1">
+            <canvas id="globeCanvas1" aria-label="Interactive 3D globe showing global event hotspots"></canvas>
+            <div class="globe-label">● GLOBAL EVENT MONITORING</div>
+            <div class="globe-legend">
+              <span><i class="c" aria-hidden="true"></i> Active</span>
+              <span><i class="o" aria-hidden="true"></i> High Impact</span>
+            </div>
+            <div class="mini-globe" id="miniWrap1" title="Focus Earth" role="button" tabindex="0" aria-label="Reset globe view">
+              <canvas id="miniCanvas1"></canvas>
+              <div class="mini-label">GLOBE</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN -->
+        <aside class="col-right" role="complementary" aria-label="Right panel analytics">
+          <div class="panel p7">
+            <div class="panel-h">📊 DISTRIBUTION</div>
+            <div class="panel-b">
+              <div class="bars" aria-hidden="true">
+                <span class="p" style="height:55%"></span>
+                <span class="c" style="height:80%"></span>
+                <span class="o" style="height:45%"></span>
+                <span class="c" style="height:70%"></span>
+                <span class="p" style="height:60%"></span>
+                <span class="o" style="height:90%"></span>
+                <span class="c" style="height:50%"></span>
+                <span class="p" style="height:65%"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel p8">
+            <div class="panel-h">📊 METRICS</div>
+            <div class="panel-b">
+              <div class="metrics">
+                <div class="m"><div class="v">72%</div><div class="l">Load</div></div>
+                <div class="m"><div class="v a">94%</div><div class="l">Acc</div></div>
+                <div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div>
+                <div class="m"><div class="v r">3</div><div class="l">Crit</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel p9">
+            <div class="panel-h">⚡ AI STATUS</div>
+            <div class="panel-b">
+              <div class="status-row">
+                <div class="ring"><div class="inner">AI</div></div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#66BB6A;">● ONLINE</div>
+                  <div style="font-size:6px;color:var(--muted);">Active · 94.2%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel p10">
+            <div class="panel-h">◈ SIGNAL</div>
+            <div class="panel-b">
+              <div class="bars" aria-hidden="true">
+                <span class="c" style="height:35%"></span>
+                <span class="c" style="height:60%"></span>
+                <span class="c" style="height:45%"></span>
+                <span class="c" style="height:80%"></span>
+                <span class="c" style="height:55%"></span>
+                <span class="c" style="height:70%"></span>
+                <span class="c" style="height:90%"></span>
+                <span class="c" style="height:40%"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel p11">
+            <div class="panel-h">🌍 CHANNELS</div>
+            <div class="panel-b" style="padding:3px 5px;">
+              <div class="channels">
+                <span class="ch on">🌍 4.8K</span>
+                <span class="ch">🚀 1.2K</span>
+                <span class="ch">🌊 892</span>
+                <span class="ch">🤖 2.4K</span>
+                <span class="ch">🔬 678</span>
+                <span class="ch">📈 3.1K</span>
+                <span class="ch">🏛️ 1.9K</span>
+                <span class="ch">🎯 412</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div><!-- end screen 1 -->
+
+      <!-- ============================================================
+           SCREEN 2: GLOBAL (full-width globe focus)
+           ============================================================ -->
+      <div class="screen-layer" data-screen="1">
+        <div style="display:flex;flex-direction:column;gap:6px;width:100%;height:100%;">
+          <!-- Top row: metrics -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+            <div class="panel p1" style="flex:1;min-width:120px;">
+              <div class="panel-h">◈ GLOBAL STREAM</div>
+              <div class="panel-b"><div class="num lg">1.15221</div><div class="label">Primary Index</div><div class="sub">↑ 12.4% · LIVE</div></div>
+            </div>
+            <div class="panel p2" style="flex:1;min-width:100px;">
+              <div class="panel-h">⚡ EVENTS / MIN</div>
+              <div class="panel-b"><div class="num md amber">4.822</div><div class="label">Throughput</div><div class="sub">Peak 6.1K</div></div>
+            </div>
+            <div class="panel p3" style="flex:1;min-width:100px;">
+              <div class="panel-h">🤖 AI CONFIDENCE</div>
+              <div class="panel-b"><div class="num md green">94.2%</div><div class="label">Model Score</div><div class="sub">↑ 2.1%</div></div>
+            </div>
+            <div class="panel p8" style="flex:1;min-width:120px;">
+              <div class="panel-h">📊 METRICS</div>
+              <div class="panel-b"><div class="metrics"><div class="m"><div class="v">72%</div><div class="l">Load</div></div><div class="m"><div class="v a">94%</div><div class="l">Acc</div></div><div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div><div class="m"><div class="v r">3</div><div class="l">Crit</div></div></div></div>
+            </div>
+          </div>
+          <!-- Globe (expanded) -->
+          <div class="globe-wrap" style="flex:1;min-height:200px;" id="globeWrap2">
+            <canvas id="globeCanvas2" aria-label="Interactive 3D globe showing global event hotspots"></canvas>
+            <div class="globe-label">● GLOBAL EVENT MONITORING</div>
+            <div class="globe-legend">
+              <span><i class="c"></i> Active</span>
+              <span><i class="o"></i> High Impact</span>
+            </div>
+            <div class="mini-globe" id="miniWrap2" title="Focus Earth">
+              <canvas id="miniCanvas2"></canvas>
+              <div class="mini-label">GLOBE</div>
+            </div>
+          </div>
+          <!-- Bottom row: channels + intelligence -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+            <div class="panel p11" style="flex:1;min-width:120px;">
+              <div class="panel-h">🌍 CHANNELS</div>
+              <div class="panel-b"><div class="channels"><span class="ch on">🌍 4.8K</span><span class="ch">🚀 1.2K</span><span class="ch">🌊 892</span><span class="ch">🤖 2.4K</span><span class="ch">🔬 678</span><span class="ch">📈 3.1K</span><span class="ch">🏛️ 1.9K</span><span class="ch">🎯 412</span></div></div>
+            </div>
+            <div class="panel" style="flex:1;min-width:120px;">
+              <div class="panel-h">🧠 INTELLIGENCE</div>
+              <div class="panel-b"><div class="row"><span>Rail disruption · Brussels</span><span style="color:#EF5350;font-weight:700;font-size:7px;">HIGH</span><span style="margin-left:auto;display:flex;gap:4px;"><span class="badge eu">EU</span><span class="badge br">BR</span><span class="badge ai">AI</span></span></div></div>
+            </div>
+            <div class="panel" style="flex:1;min-width:100px;">
+              <div class="panel-h">🔮 FORECAST</div>
+              <div class="panel-b"><div class="row" style="gap:8px;"><div class="forecast-num">78%</div><div style="flex:1;"><div style="font-size:6px;margin-bottom:2px;">Escalation risk</div><div class="progress"><div class="fill"></div></div></div><span style="font-size:6px;">87% conf</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end screen 2 -->
+
+      <!-- ============================================================
+           SCREEN 3: FORECASTS (compact dashboard)
+           ============================================================ -->
+      <div class="screen-layer" data-screen="2">
+        <div style="display:flex;flex-direction:column;gap:6px;width:100%;height:100%;">
+          <!-- Top row -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+            <div class="panel p2" style="flex:1;min-width:80px;">
+              <div class="panel-h">⚡ EVENTS / MIN</div>
+              <div class="panel-b"><div class="num md amber">4.822</div><div class="label">Throughput</div></div>
+            </div>
+            <div class="panel p3" style="flex:1;min-width:80px;">
+              <div class="panel-h">🤖 AI</div>
+              <div class="panel-b"><div class="num md green">94.2%</div><div class="label">Confidence</div></div>
+            </div>
+            <div class="panel p9" style="flex:1;min-width:80px;">
+              <div class="panel-h">⚡ AI STATUS</div>
+              <div class="panel-b"><div class="status-row"><div class="ring"><div class="inner">AI</div></div><div><div style="font-size:10px;font-weight:700;color:#66BB6A;">● ONLINE</div></div></div></div>
+            </div>
+            <div class="panel" style="flex:1;min-width:100px;">
+              <div class="panel-h">🔮 FORECAST</div>
+              <div class="panel-b"><div class="row" style="gap:8px;"><div class="forecast-num">78%</div><div style="flex:1;"><div style="font-size:6px;margin-bottom:2px;">Escalation risk</div><div class="progress"><div class="fill"></div></div></div><span style="font-size:6px;">87%</span></div></div>
+            </div>
+          </div>
+          <!-- Globe -->
+          <div class="globe-wrap" style="flex:1;min-height:140px;" id="globeWrap3">
+            <canvas id="globeCanvas3" aria-label="Interactive 3D globe showing global event hotspots"></canvas>
+            <div class="globe-label">● GLOBAL MONITORING</div>
+            <div class="mini-globe" id="miniWrap3" title="Focus Earth">
+              <canvas id="miniCanvas3"></canvas>
+              <div class="mini-label">GLOBE</div>
+            </div>
+          </div>
+          <!-- Bottom: metrics + recommendations -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+            <div class="panel p4" style="flex:1;min-width:80px;">
+              <div class="panel-h">📈 FREQ</div>
+              <div class="panel-b"><div class="bars"><span class="c" style="height:40%"></span><span class="c" style="height:65%"></span><span class="c" style="height:80%"></span><span class="c" style="height:50%"></span><span class="c" style="height:90%"></span><span class="c" style="height:70%"></span><span class="c" style="height:55%"></span><span class="c" style="height:95%"></span></div></div>
+            </div>
+            <div class="panel p5" style="flex:1;min-width:80px;">
+              <div class="panel-h">🔥 HEAT</div>
+              <div class="panel-b"><div class="bars"><span class="o" style="height:30%"></span><span class="o" style="height:55%"></span><span class="o" style="height:75%"></span><span class="o" style="height:90%"></span><span class="o" style="height:60%"></span><span class="o" style="height:40%"></span><span class="o" style="height:85%"></span><span class="o" style="height:70%"></span></div></div>
+            </div>
+            <div class="panel p8" style="flex:1;min-width:100px;">
+              <div class="panel-h">📊 METRICS</div>
+              <div class="panel-b"><div class="metrics"><div class="m"><div class="v">72%</div><div class="l">Load</div></div><div class="m"><div class="v a">94%</div><div class="l">Acc</div></div><div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div><div class="m"><div class="v r">3</div><div class="l">Crit</div></div></div></div>
+            </div>
+            <div class="panel" style="flex:1;min-width:100px;">
+              <div class="panel-h">💡 RECS</div>
+              <div class="panel-b"><div class="row" style="gap:3px;"><span class="tag">▶ Protocol A-7</span><span class="tag">▶ Notify EU</span><span class="tag">▶ Monitor Sat</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end screen 3 -->
+
+    </div><!-- end main -->
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom" role="region" aria-label="Bottom information panel">
+      <div class="panel">
+        <div class="panel-h">🧠 INTELLIGENCE</div>
+        <div class="panel-b">
           <div class="row">
             <span>Rail disruption · Brussels</span>
             <span style="color:#EF5350;font-weight:700;font-size:7px;">HIGH</span>
@@ -577,9 +1274,10 @@
           </div>
         </div>
       </div>
-      <div class="widget">
-        <div class="widget-h">📋 EVENT</div>
-        <div class="widget-b">
+
+      <div class="panel">
+        <div class="panel-h">📋 EVENT</div>
+        <div class="panel-b">
           <div class="row">
             <span style="color:var(--text);font-weight:600;">Europe Infrastructure</span>
             <span>11:32 CET</span>
@@ -588,9 +1286,10 @@
           </div>
         </div>
       </div>
-      <div class="widget">
-        <div class="widget-h">🔮 FORECAST</div>
-        <div class="widget-b">
+
+      <div class="panel">
+        <div class="panel-h">🔮 FORECAST</div>
+        <div class="panel-b">
           <div class="row" style="gap:8px;">
             <div class="forecast-num">78%</div>
             <div style="flex:1;">
@@ -601,9 +1300,10 @@
           </div>
         </div>
       </div>
-      <div class="widget">
-        <div class="widget-h">💡 RECS</div>
-        <div class="widget-b">
+
+      <div class="panel">
+        <div class="panel-h">💡 RECS</div>
+        <div class="panel-b">
           <div class="row" style="gap:3px;">
             <span class="tag">▶ Protocol A-7</span>
             <span class="tag">▶ Notify EU</span>
@@ -612,9 +1312,10 @@
           </div>
         </div>
       </div>
-      <div class="widget">
-        <div class="widget-h">📊 SYS</div>
-        <div class="widget-b">
+
+      <div class="panel">
+        <div class="panel-h">📊 SYS</div>
+        <div class="panel-b">
           <div class="metrics">
             <div class="m"><div class="v">72%</div><div class="l">CPU</div></div>
             <div class="m"><div class="v a">94%</div><div class="l">Acc</div></div>
@@ -625,48 +1326,61 @@
       </div>
     </div>
 
-    <div class="footer">
-      <span>TERSANESI STREAM™ · Holographic Dashboard · v5.0</span>
+    <!-- FOOTER -->
+    <footer class="footer" role="contentinfo">
+      <span>TERSANESI STREAM™ · 3-Screen Dashboard · v6.0</span>
       <div class="r">
-        <span><i class="dot online" style="margin-right:3px;"></i>Online</span>
+        <span><i class="dot online" style="margin-right:3px;" aria-hidden="true"></i>Online</span>
         <span>● 4,821 events/min</span>
         <span>● TLS 1.3</span>
         <span>© 2026 · Confidential</span>
       </div>
-    </div>
+    </footer>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- ===== THREE.JS ===== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js">
+  </script>
 
   <script>
+    /**
+     * TERSANESI STREAM™ — 3-Screen Dashboard
+     * Complete implementation with 3 screens: Analytics, Global, Forecasts
+     */
+
+    // ===== LOADING =====
     (function initLoading() {
-      let p = 0;
+      let progress = 0;
       const fill = document.getElementById('loadFill');
-      const iv = setInterval(() => {
-        p += Math.random() * 18 + 6;
-        if (p >= 100) {
-          p = 100;
-          clearInterval(iv);
+      const interval = setInterval(() => {
+        progress += Math.random() * 18 + 6;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
           fill.style.width = '100%';
           setTimeout(() => {
             document.getElementById('loading').classList.add('hidden');
             initApp();
           }, 350);
         }
-        fill.style.width = Math.min(p, 100) + '%';
+        fill.style.width = Math.min(progress, 100) + '%';
       }, 90);
     })();
 
+    // ===== CLOCK =====
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('clock').textContent = h + ':' + m + ' CET';
+      const el = document.getElementById('clock');
+      if (el) el.textContent = h + ':' + m + ' CET';
     }
     setInterval(updateClock, 30000);
     updateClock();
 
+    // ===== VIEW TOGGLE =====
     const dashboard = document.getElementById('dashboard');
     const btnFlat = document.getElementById('btnFlat');
     const btnCurved = document.getElementById('btnCurved');
@@ -676,56 +1390,123 @@
       btnFlat.classList.add('active');
       btnCurved.classList.remove('active');
     });
+
     btnCurved.addEventListener('click', () => {
       dashboard.classList.add('curved');
       btnCurved.classList.add('active');
       btnFlat.classList.remove('active');
     });
 
-    document.querySelectorAll('.ch').forEach(el => {
+    // ===== SCREEN TOGGLE =====
+    const screenButtons = document.querySelectorAll('#screenToggle button');
+    const screenLayers = document.querySelectorAll('.screen-layer');
+    let currentScreen = 0;
+
+    function setActiveScreen(index) {
+      currentScreen = index;
+      screenLayers.forEach((layer, i) => {
+        layer.classList.toggle('active', i === index);
+      });
+      screenButtons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+      // Re-init globe for active screen
+      setTimeout(() => {
+        initGlobeForActiveScreen();
+      }, 200);
+    }
+
+    screenButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => setActiveScreen(index));
+    });
+
+    // ===== CHANNEL TOGGLE =====
+    document.querySelectorAll('.ch').forEach((el) => {
       el.addEventListener('click', () => {
-        document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
-        el.classList.add('on');
+        const parent = el.closest('.channels');
+        if (parent) {
+          parent.querySelectorAll('.ch').forEach((c) => c.classList.remove('on'));
+          el.classList.add('on');
+        }
       });
     });
 
+    // ===== BAR ANIMATION =====
     function animateBars() {
-      document.querySelectorAll('.bars span').forEach((bar, i) => {
-        const h = bar.style.height;
+      document.querySelectorAll('.bars span').forEach((bar, index) => {
+        const targetHeight = bar.style.height;
         bar.style.height = '2%';
-        setTimeout(() => { bar.style.height = h; }, 40 + i * 25);
+        setTimeout(() => {
+          bar.style.height = targetHeight;
+        }, 40 + index * 25);
       });
     }
 
-    let scene, camera, renderer, controls;
-    let earth, atmosphere, ring, hotspots = [];
-    let animId;
+    // ===== THREE.JS GLOBE =====
+    let globeInstances = [];
 
     function initApp() {
-      initGlobe();
-      initMiniGlobe();
+      initGlobe('globeCanvas1', 'globeWrap1', 'miniWrap1', 'miniCanvas1');
+      initGlobe('globeCanvas2', 'globeWrap2', 'miniWrap2', 'miniCanvas2');
+      initGlobe('globeCanvas3', 'globeWrap3', 'miniWrap3', 'miniCanvas3');
       animateBars();
     }
 
-    function initGlobe() {
-      const container = document.getElementById('globeWrap');
-      const canvas = document.getElementById('globeCanvas');
-      const w = container.clientWidth || 700;
-      const h = container.clientHeight || 420;
+    function initGlobeForActiveScreen() {
+      // Dispose all existing instances
+      if (window.globeInstances) {
+        window.globeInstances.forEach(g => { if (g) g.dispose(); });
+        window.globeInstances = [];
+      }
 
-      scene = new THREE.Scene();
+      const activeLayer = document.querySelector('.screen-layer.active');
+      if (!activeLayer) return;
+
+      // Find all globe canvases in active layer
+      const canvases = activeLayer.querySelectorAll('canvas[id^="globeCanvas"]');
+      canvases.forEach(canvas => {
+        const wrap = canvas.closest('.globe-wrap');
+        const wrapId = wrap ? wrap.id : 'globeWrap';
+        const miniWrap = wrap ? wrap.querySelector('.mini-globe') : null;
+        const miniCanvas = miniWrap ? miniWrap.querySelector('canvas') : null;
+        initGlobe(
+          canvas.id,
+          wrapId,
+          miniWrap ? miniWrap.id : 'miniWrap',
+          miniCanvas ? miniCanvas.id : 'miniCanvas'
+        );
+      });
+    }
+
+    function initGlobe(canvasId, wrapId, miniWrapId, miniCanvasId) {
+      const container = document.getElementById(wrapId);
+      const canvas = document.getElementById(canvasId);
+      if (!container || !canvas) return;
+
+      const width = container.clientWidth || 600;
+      const height = container.clientHeight || 340;
+
+      // Scene
+      const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x05060F);
 
-      camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 200);
+      // Camera
+      const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 200);
       camera.position.set(0, 0.8, 8.8);
 
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setSize(w, h);
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.25;
 
-      controls = new THREE.OrbitControls(camera, canvas);
+      // Controls
+      const controls = new THREE.OrbitControls(camera, canvas);
       controls.enableDamping = true;
       controls.dampingFactor = 0.07;
       controls.minDistance = 5.5;
@@ -734,27 +1515,12 @@
       controls.autoRotateSpeed = 0.55;
       controls.target.set(0, 0, 0);
 
-      buildHolographicEarth();
-      animateGlobe(0);
-
-      window.addEventListener('resize', onResize);
-      document.getElementById('miniWrap').addEventListener('click', () => {
-        controls.autoRotate = false;
-        camera.position.set(0, 0.8, 8.8);
-        controls.target.set(0, 0, 0);
-        controls.update();
-        setTimeout(() => { controls.autoRotate = true; }, 1800);
-      });
-    }
-
-    function buildHolographicEarth() {
-      const R = 3.45;
+      // Build Earth
+      const RADIUS = 3.45;
       const SEG = 96;
       const loader = new THREE.TextureLoader();
 
-      // Real Earth texture with strong cyan holographic treatment
       const map = loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-      const earthGeo = new THREE.SphereGeometry(R, SEG, SEG);
       const earthMat = new THREE.MeshPhongMaterial({
         map: map,
         color: 0x88DDFF,
@@ -763,299 +1529,337 @@
         transparent: true,
         opacity: 0.95,
         shininess: 25,
-        specular: 0x226688
+        specular: 0x226688,
       });
-      earth = new THREE.Mesh(earthGeo, earthMat);
+      const earth = new THREE.Mesh(new THREE.SphereGeometry(RADIUS, SEG, SEG), earthMat);
       scene.add(earth);
 
-      // Cyan wireframe grid (subtle holographic overlay)
-      const wireGeo = new THREE.SphereGeometry(R * 1.004, 48, 32);
+      // Wireframe
       const wireMat = new THREE.MeshBasicMaterial({
         color: 0x00E5FF,
         wireframe: true,
         transparent: true,
-        opacity: 0.08
+        opacity: 0.06,
       });
-      scene.add(new THREE.Mesh(wireGeo, wireMat));
+      scene.add(new THREE.Mesh(new THREE.SphereGeometry(RADIUS * 1.004, 48, 32), wireMat));
 
-      // Strong cyan atmosphere shell
-      const atmosGeo = new THREE.SphereGeometry(R * 1.035, 64, 64);
+      // Atmosphere
       const atmosMat = new THREE.MeshBasicMaterial({
         color: 0x00E5FF,
         transparent: true,
-        opacity: 0.14,
+        opacity: 0.12,
         side: THREE.BackSide,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
       });
-      atmosphere = new THREE.Mesh(atmosGeo, atmosMat);
-      scene.add(atmosphere);
+      scene.add(new THREE.Mesh(new THREE.SphereGeometry(RADIUS * 1.035, 64, 64), atmosMat));
 
-      // Outer soft bloom shell
-      const glowGeo = new THREE.SphereGeometry(R * 1.14, 48, 48);
+      // Outer glow
       const glowMat = new THREE.MeshBasicMaterial({
         color: 0x00B8D4,
         transparent: true,
-        opacity: 0.07,
+        opacity: 0.06,
         side: THREE.BackSide,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
       });
-      scene.add(new THREE.Mesh(glowGeo, glowMat));
+      scene.add(new THREE.Mesh(new THREE.SphereGeometry(RADIUS * 1.14, 48, 48), glowMat));
 
-      // === POWERFUL CYAN RING (matches original photos) ===
-      // Outer soft ring
-      const ringOuter = new THREE.Mesh(
-        new THREE.RingGeometry(R * 1.22, R * 1.48, 128),
-        new THREE.MeshBasicMaterial({
-          color: 0x00E5FF,
-          transparent: true,
-          opacity: 0.28,
-          side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
-        })
-      );
-      ringOuter.rotation.x = Math.PI / 2.08;
-      scene.add(ringOuter);
-
-      // Main bright ring
-      const ringGeo = new THREE.RingGeometry(R * 1.28, R * 1.42, 128);
+      // Rings
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0x00E5FF,
         transparent: true,
-        opacity: 0.72,
+        opacity: 0.6,
         side: THREE.DoubleSide,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
       });
-      ring = new THREE.Mesh(ringGeo, ringMat);
+      const ring = new THREE.Mesh(new THREE.RingGeometry(RADIUS * 1.28, RADIUS * 1.42, 128), ringMat);
       ring.rotation.x = Math.PI / 2.08;
       scene.add(ring);
 
-      // Bright core of the ring
-      const ringCore = new THREE.Mesh(
-        new THREE.RingGeometry(R * 1.32, R * 1.38, 128),
-        new THREE.MeshBasicMaterial({
-          color: 0xE0FFFF,
-          transparent: true,
-          opacity: 0.9,
-          side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
-        })
-      );
-      ringCore.rotation.x = Math.PI / 2.08;
-      scene.add(ringCore);
-
-      // === ORANGE / AMBER HOTSPOTS (strong, matching photos) ===
+      // Hotspots
+      const hotspots = [];
       const hotZones = [
-        // Americas – strong
         { lat: 38, lon: -97, scale: 1.15, intensity: 0.95 },
         { lat: -12, lon: -55, scale: 0.95, intensity: 0.85 },
-        // Africa – very strong (original has bright orange Africa)
         { lat: 5, lon: 20, scale: 1.2, intensity: 1.0 },
         { lat: -20, lon: 25, scale: 0.7, intensity: 0.75 },
-        // Europe / Middle East
         { lat: 45, lon: 15, scale: 0.55, intensity: 0.7 },
         { lat: 28, lon: 45, scale: 0.6, intensity: 0.8 },
-        // Asia – strong
         { lat: 35, lon: 105, scale: 1.25, intensity: 0.95 },
         { lat: 55, lon: 40, scale: 0.6, intensity: 0.6 },
-        // Australia
-        { lat: -25, lon: 135, scale: 0.7, intensity: 0.85 }
+        { lat: -25, lon: 135, scale: 0.7, intensity: 0.85 },
       ];
 
-      hotZones.forEach((z, i) => {
-        const phi = (90 - z.lat) * Math.PI / 180;
-        const theta = (z.lon + 180) * Math.PI / 180;
+      hotZones.forEach((zone, index) => {
+        const phi = (90 - zone.lat) * Math.PI / 180;
+        const theta = (zone.lon + 180) * Math.PI / 180;
         const pos = new THREE.Vector3(
-          -R * 1.018 * Math.sin(phi) * Math.cos(theta),
-           R * 1.018 * Math.cos(phi),
-           R * 1.018 * Math.sin(phi) * Math.sin(theta)
+          -RADIUS * 1.018 * Math.sin(phi) * Math.cos(theta),
+          RADIUS * 1.018 * Math.cos(phi),
+          RADIUS * 1.018 * Math.sin(phi) * Math.sin(theta)
         );
-
-        // Large soft orange glow
-        const hGeo = new THREE.CircleGeometry(0.72 * z.scale, 32);
-        const hMat = new THREE.MeshBasicMaterial({
-          color: 0xFF9F43,
-          transparent: true,
-          opacity: 0.55 * z.intensity,
-          side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
-        });
-        const disc = new THREE.Mesh(hGeo, hMat);
+        const disc = new THREE.Mesh(
+          new THREE.CircleGeometry(0.72 * zone.scale, 32),
+          new THREE.MeshBasicMaterial({
+            color: 0xFF9F43,
+            transparent: true,
+            opacity: 0.45 * zone.intensity,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          })
+        );
         disc.position.copy(pos);
         disc.lookAt(0, 0, 0);
-        disc.userData = { baseOp: 0.42 * z.intensity, phase: i * 0.6 };
+        disc.userData = { baseOpacity: 0.42 * zone.intensity, phase: index * 0.6 };
         scene.add(disc);
         hotspots.push(disc);
 
-        // Hot core
-        const cGeo = new THREE.CircleGeometry(0.28 * z.scale, 20);
-        const cMat = new THREE.MeshBasicMaterial({
-          color: 0xFFB74D,
-          transparent: true,
-          opacity: 0.8 * z.intensity,
-          side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
-        });
-        const core = new THREE.Mesh(cGeo, cMat);
+        const core = new THREE.Mesh(
+          new THREE.CircleGeometry(0.28 * zone.scale, 20),
+          new THREE.MeshBasicMaterial({
+            color: 0xFFB74D,
+            transparent: true,
+            opacity: 0.8 * zone.intensity,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          })
+        );
         core.position.copy(pos.clone().multiplyScalar(1.003));
         core.lookAt(0, 0, 0);
         scene.add(core);
+        hotspots.push(core);
       });
 
-      // Cyan city markers
+      // City markers
       const cities = [
-        [40.7, -74], [51.5, -0.1], [35.7, 139.7], [-33.9, 151.2],
-        [55.8, 37.6], [39.9, 116.4], [-22.9, -43.2], [30.0, 31.2],
-        [25.2, 55.3], [1.35, 103.8], [19.4, -99.1], [-26.2, 28.0]
+        [40.7, -74],
+        [51.5, -0.1],
+        [35.7, 139.7],
+        [-33.9, 151.2],
+        [55.8, 37.6],
+        [39.9, 116.4],
+        [-22.9, -43.2],
+        [30.0, 31.2],
+        [25.2, 55.3],
+        [1.35, 103.8]
       ];
       cities.forEach(([lat, lon], i) => {
         const phi = (90 - lat) * Math.PI / 180;
         const theta = (lon + 180) * Math.PI / 180;
         const pos = new THREE.Vector3(
-          -R * 1.03 * Math.sin(phi) * Math.cos(theta),
-           R * 1.03 * Math.cos(phi),
-           R * 1.03 * Math.sin(phi) * Math.sin(theta)
+          -RADIUS * 1.03 * Math.sin(phi) * Math.cos(theta),
+          RADIUS * 1.03 * Math.cos(phi),
+          RADIUS * 1.03 * Math.sin(phi) * Math.sin(theta)
         );
-        const m = new THREE.Mesh(
-          new THREE.CircleGeometry(0.08, 12),
+        const marker = new THREE.Mesh(
+          new THREE.CircleGeometry(0.07, 12),
           new THREE.MeshBasicMaterial({
             color: 0x00E5FF,
             transparent: true,
             opacity: 0.9,
             side: THREE.DoubleSide,
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
           })
         );
-        m.position.copy(pos);
-        m.lookAt(0, 0, 0);
-        m.userData = { phase: i * 0.45 };
-        scene.add(m);
-        hotspots.push(m);
+        marker.position.copy(pos);
+        marker.lookAt(0, 0, 0);
+        marker.userData = { phase: i * 0.45 };
+        scene.add(marker);
+        hotspots.push(marker);
       });
 
       // Stars
       const starsGeo = new THREE.BufferGeometry();
-      const posArr = new Float32Array(2200 * 3);
-      for (let i = 0; i < 2200; i++) {
+      const starsPos = new Float32Array(2000 * 3);
+      for (let i = 0; i < 2000; i++) {
         const r = 95 * Math.cbrt(Math.random());
-        const th = Math.random() * Math.PI * 2;
-        const ph = Math.acos(2 * Math.random() - 1);
-        posArr[i*3]   = r * Math.sin(ph) * Math.cos(th);
-        posArr[i*3+1] = r * Math.cos(ph);
-        posArr[i*3+2] = r * Math.sin(ph) * Math.sin(th);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        starsPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        starsPos[i * 3 + 1] = r * Math.cos(phi);
+        starsPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
       }
-      starsGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
       scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({
-        size: 0.065, color: 0xffffff, transparent: true, opacity: 0.7, sizeAttenuation: true
+        size: 0.06,
+        color: 0xFFFFFF,
+        transparent: true,
+        opacity: 0.7,
+        sizeAttenuation: true,
       })));
 
-      // Lighting – cooler, more holographic
+      // Lights
       const key = new THREE.DirectionalLight(0xAAEEFF, 1.1);
       key.position.set(6, 5, 14);
       scene.add(key);
       scene.add(new THREE.AmbientLight(0x113355, 0.55));
       scene.add(new THREE.HemisphereLight(0x00E5FF, 0x001122, 0.35));
-    }
 
-    function animateGlobe(t) {
-      animId = requestAnimationFrame(animateGlobe);
+      // Animation
+      let animId;
 
-      if (earth) earth.rotation.y += 0.0006;
-      if (atmosphere) atmosphere.rotation.y += 0.0004;
-      if (ring) ring.rotation.z += 0.0008;
+      function animate(time) {
+        animId = requestAnimationFrame(animate);
 
-      const pt = t * 0.001;
-      hotspots.forEach((h) => {
-        if (h.userData.baseOp !== undefined) {
-          h.material.opacity = h.userData.baseOp * (0.75 + 0.25 * Math.sin(pt * 1.8 + h.userData.phase));
-        } else {
-          const s = 1 + 0.15 * Math.sin(pt * 2.2 + (h.userData.phase || 0));
-          h.scale.set(s, s, s);
+        earth.rotation.y += 0.0006;
+        ring.rotation.z += 0.0008;
+
+        const t = time * 0.001;
+        hotspots.forEach((h) => {
+          if (h.userData.baseOpacity !== undefined) {
+            const pulse = 0.75 + 0.25 * Math.sin(t * 1.8 + h.userData.phase);
+            h.material.opacity = h.userData.baseOpacity * pulse;
+          } else if (h.userData.phase !== undefined) {
+            const scale = 1 + 0.15 * Math.sin(t * 2.2 + h.userData.phase);
+            h.scale.set(scale, scale, scale);
+          }
+        });
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate(0);
+
+      // Resize
+      function onResize() {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w && h) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
         }
-      });
+      }
 
-      controls.update();
-      renderer.render(scene, camera);
+      const ro = new ResizeObserver(onResize);
+      ro.observe(container);
+
+      // Mini globe click reset
+      const miniWrap = document.getElementById(miniWrapId);
+      if (miniWrap) {
+        miniWrap.addEventListener('click', () => {
+          controls.autoRotate = false;
+          camera.position.set(0, 0.8, 8.8);
+          controls.target.set(0, 0, 0);
+          controls.update();
+          setTimeout(() => {
+            controls.autoRotate = true;
+          }, 1800);
+        });
+      }
+
+      // Store instance for cleanup
+      const instance = {
+        dispose: () => {
+          if (animId) cancelAnimationFrame(animId);
+          renderer.dispose();
+          ro.disconnect();
+        }
+      };
+
+      if (!window.globeInstances) window.globeInstances = [];
+      window.globeInstances.push(instance);
+
+      // ===== MINI GLOBE =====
+      const miniCanvas = document.getElementById(miniCanvasId);
+      if (miniCanvas) {
+        const miniWrapEl = miniCanvas.closest('.mini-globe') || document.getElementById(miniWrapId);
+        const mw = miniWrapEl ? miniWrapEl.clientWidth || 80 : 80;
+        const mh = miniWrapEl ? miniWrapEl.clientHeight || 80 : 80;
+
+        const mScene = new THREE.Scene();
+        mScene.background = new THREE.Color(0x05060F);
+        const mCamera = new THREE.PerspectiveCamera(30, mw / mh, 0.1, 50);
+        mCamera.position.set(0, 0, 4.2);
+        const mRenderer = new THREE.WebGLRenderer({
+          canvas: miniCanvas,
+          antialias: true,
+          alpha: true,
+        });
+        mRenderer.setSize(mw, mh);
+        mRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const mEarth = new THREE.Mesh(
+          new THREE.SphereGeometry(1.25, 32, 32),
+          new THREE.MeshPhongMaterial({
+            color: 0x0A1A2A,
+            emissive: 0x003344,
+            emissiveIntensity: 0.4,
+            transparent: true,
+            opacity: 0.9,
+          })
+        );
+        mScene.add(mEarth);
+
+        const mWire = new THREE.Mesh(
+          new THREE.SphereGeometry(1.26, 20, 14),
+          new THREE.MeshBasicMaterial({
+            color: 0x00E5FF,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15,
+          })
+        );
+        mScene.add(mWire);
+
+        const mAtmos = new THREE.Mesh(
+          new THREE.SphereGeometry(1.32, 24, 24),
+          new THREE.MeshBasicMaterial({
+            color: 0x00E5FF,
+            transparent: true,
+            opacity: 0.08,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          })
+        );
+        mScene.add(mAtmos);
+
+        mScene.add(new THREE.AmbientLight(0x112233, 0.5));
+        const mLight = new THREE.DirectionalLight(0xAADDFF, 0.7);
+        mLight.position.set(4, 3, 5);
+        mScene.add(mLight);
+
+        (function loop() {
+          requestAnimationFrame(loop);
+          if (mEarth) mEarth.rotation.y += 0.008;
+          mRenderer.render(mScene, mCamera);
+        })();
+
+        instance._miniRenderer = mRenderer;
+      }
     }
 
-    function onResize() {
-      const container = document.getElementById('globeWrap');
-      if (!container || !renderer || !camera) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    }
-
-    let miniScene, miniCam, miniRen, miniEarth;
-
-    function initMiniGlobe() {
-      const canvas = document.getElementById('miniCanvas');
-      const wrap = document.getElementById('miniWrap');
-      const w = wrap.clientWidth || 90;
-      const h = wrap.clientHeight || 90;
-
-      miniScene = new THREE.Scene();
-      miniScene.background = new THREE.Color(0x05060F);
-
-      miniCam = new THREE.PerspectiveCamera(30, w / h, 0.1, 50);
-      miniCam.position.set(0, 0, 4.2);
-
-      miniRen = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      miniRen.setSize(w, h);
-      miniRen.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      const geo = new THREE.SphereGeometry(1.25, 32, 32);
-      const mat = new THREE.MeshPhongMaterial({
-        color: 0x0A1A2A,
-        emissive: 0x003344,
-        emissiveIntensity: 0.4,
-        transparent: true,
-        opacity: 0.9
-      });
-      miniEarth = new THREE.Mesh(geo, mat);
-      miniScene.add(miniEarth);
-
-      const wire = new THREE.Mesh(
-        new THREE.SphereGeometry(1.26, 20, 14),
-        new THREE.MeshBasicMaterial({ color: 0x00E5FF, wireframe: true, transparent: true, opacity: 0.15 })
-      );
-      miniScene.add(wire);
-
-      const atmos = new THREE.Mesh(
-        new THREE.SphereGeometry(1.32, 24, 24),
-        new THREE.MeshBasicMaterial({
-          color: 0x00E5FF, transparent: true, opacity: 0.08,
-          side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false
-        })
-      );
-      miniScene.add(atmos);
-
-      miniScene.add(new THREE.AmbientLight(0x112233, 0.5));
-      const l = new THREE.DirectionalLight(0xAADDFF, 0.7);
-      l.position.set(4, 3, 5);
-      miniScene.add(l);
-
-      (function loop() {
-        requestAnimationFrame(loop);
-        if (miniEarth) miniEarth.rotation.y += 0.008;
-        miniRen.render(miniScene, miniCam);
-      })();
-    }
-
+    // ===== CLEANUP =====
     window.addEventListener('beforeunload', () => {
-      if (animId) cancelAnimationFrame(animId);
-      if (renderer) renderer.dispose();
-      if (miniRen) miniRen.dispose();
+      if (window.globeInstances) {
+        window.globeInstances.forEach(g => { if (g) g.dispose(); });
+      }
     });
+
+    // ===== RESIZE HANDLER =====
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (window.globeInstances) {
+          window.globeInstances.forEach(g => { if (g) g.dispose(); });
+          window.globeInstances = [];
+        }
+        initGlobeForActiveScreen();
+      }, 300);
+    });
+
+    // ===== INITIAL ACTIVATION =====
+    setTimeout(() => {
+      setActiveScreen(0);
+    }, 500);
   </script>
 </body>
 </html>
