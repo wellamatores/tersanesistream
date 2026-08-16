@@ -1,876 +1,1061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERSANESI STREAM™ | THREE-SCREEN ARCHITECTURE</title>
-    <style>
-        /* ===== BASE STYLES ===== */
-        :root {
-            --bg-dark: #050508;
-            --bg-darker: #0A0A0F;
-            --bg-panel: rgba(13, 13, 21, 0.8);
-            --text-primary: #E0E0E0;
-            --text-secondary: #A0C4D8;
-            --text-muted: #5A7A96;
-            --accent-cyan: #4DD0E1;
-            --accent-amber: #FFB74D;
-            --accent-red: #FF6B6B;
-            --accent-green: #4CAF50;
-            --accent-purple: #9C27B0;
-            --glow-cyan: rgba(77, 208, 225, 0.15);
-            --glow-amber: rgba(255, 183, 77, 0.15);
-            --border-color: #1A3A5C;
-            --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-primary);
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            height: 100vh;
-            overflow-x: hidden;
-            overflow-y: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== SCREEN CONTAINER ===== */
-        .screens-container {
-            display: flex;
-            height: calc(100vh - 50px);
-            width: 300%;
-            transition: transform 0.5s ease;
-        }
-
-        .screen {
-            width: 33.33%;
-            height: 100%;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            position: relative;
-        }
-
-        /* ===== SCREEN 1: ANALYTICS ===== */
-        .screen-1 {
-            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
-            border-right: 2px solid var(--border-color);
-        }
-
-        .screen-1 .header {
-            text-align: center;
-            font-size: 24px;
-            color: var(--accent-cyan);
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-
-        .metrics-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            flex: 1;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .metric {
-            text-align: center;
-        }
-
-        .metric-value {
-            font-family: var(--font-mono);
-            font-size: 100px;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            text-shadow: 0 0 20px var(--glow-cyan);
-            line-height: 1;
-        }
-
-        .metric-label {
-            font-family: var(--font-mono);
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-top: 10px;
-            letter-spacing: 2px;
-        }
-
-        .metric-secondary {
-            display: flex;
-            gap: 50px;
-            margin-top: 30px;
-        }
-
-        .metric-secondary-item {
-            text-align: center;
-        }
-
-        .metric-secondary-item .value {
-            font-family: var(--font-mono);
-            font-size: 48px;
-            color: var(--accent-cyan);
-            text-shadow: 0 0 10px var(--glow-cyan);
-        }
-
-        .metric-secondary-item .label {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        .charts-container {
-            display: flex;
-            gap: 20px;
-            height: 30%;
-        }
-
-        .chart {
-            flex: 1;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            font-size: 12px;
-        }
-
-        /* ===== SCREEN 2: MAIN STREAM ===== */
-        .screen-2 {
-            background: var(--bg-darker);
-            border-right: 2px solid var(--border-color);
-        }
-
-        .screen-2 .header {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .screen-2 .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--accent-cyan);
-            letter-spacing: 1px;
-        }
-
-        .screen-2 .logo span {
-            font-weight: 300;
-            color: var(--text-secondary);
-        }
-
-        .screen-2 .status-bar {
-            display: flex;
-            gap: 15px;
-            font-family: var(--font-mono);
-            font-size: 12px;
-        }
-
-        .screen-2 .status-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .screen-2 .status-item.live {
-            color: var(--accent-amber);
-        }
-
-        .screen-2 .status-item dot::before {
-            content: "●";
-            color: var(--accent-cyan);
-            font-size: 6px;
-        }
-
-        .screen-2 .main-content {
-            display: flex;
-            flex: 1;
-            gap: 20px;
-        }
-
-        .screen-2 .left-panel {
-            width: 15%;
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border-color);
-            padding: 15px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .screen-2 .channel-item {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .screen-2 .channel-item:hover {
-            background: var(--glow-cyan);
-        }
-
-        .screen-2 .channel-item.active {
-            background: rgba(77, 208, 225, 0.1);
-            border-left: 2px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-
-        .screen-2 .channel-item .icon {
-            width: 20px;
-            text-align: center;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        .screen-2 .channel-item .name {
-            font-size: 14px;
-            font-weight: 500;
-            flex: 1;
-        }
-
-        .screen-2 .channel-item .count {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--text-muted);
-            background: rgba(77, 208, 225, 0.1);
-            padding: 2px 5px;
-            border-radius: 8px;
-        }
-
-        .screen-2 .center-panel {
-            width: 50%;
-            background: var(--bg-panel);
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .screen-2 .event-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .screen-2 .event-card:hover {
-            box-shadow: 0 0 10px var(--glow-cyan);
-            border-color: var(--accent-cyan);
-        }
-
-        .screen-2 .event-card.selected {
-            border-color: var(--accent-cyan);
-            background: rgba(77, 208, 225, 0.05);
-        }
-
-        .screen-2 .event-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .screen-2 .event-channel {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--accent-cyan);
-            text-transform: uppercase;
-        }
-
-        .screen-2 .event-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 5px 0;
-        }
-
-        .screen-2 .event-meta {
-            display: flex;
-            gap: 10px;
-            font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .screen-2 .event-meta .impact {
-            color: var(--accent-amber);
-            font-weight: 600;
-        }
-
-        .screen-2 .event-meta .impact.high {
-            color: var(--accent-red);
-        }
-
-        .screen-2 .event-description {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin: 8px 0;
-        }
-
-        .screen-2 .event-tags {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .screen-2 .event-tags span {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            background: rgba(77, 208, 225, 0.1);
-            padding: 2px 5px;
-            border-radius: 4px;
-            color: var(--text-muted);
-        }
-
-        .screen-2 .right-panel {
-            width: 25%;
-            background: var(--bg-panel);
-            border-left: 1px solid var(--border-color);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            overflow-y: auto;
-        }
-
-        .screen-2 .intelligence-header {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--accent-cyan);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .screen-2 .intelligence-section {
-            margin-bottom: 10px;
-        }
-
-        .screen-2 .intelligence-section h3 {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .screen-2 .intelligence-section p {
-            font-size: 12px;
-            color: var(--text-primary);
-            line-height: 1.4;
-        }
-
-        .screen-2 .relationship-graph {
-            height: 200px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .screen-2 .lower-panel {
-            height: 25%;
-            background: var(--bg-darker);
-            border-top: 1px solid var(--border-color);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .screen-2 .world-map {
-            width: 80%;
-            height: 80%;
-            background: radial-gradient(circle at center, #0A1A2A 0%, #000000 100%);
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .screen-2 .map-cluster {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: var(--accent-cyan);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--glow-cyan);
-            animation: pulse 2s infinite;
-        }
-
-        .screen-2 .map-cluster.amber {
-            background: var(--accent-amber);
-            box-shadow: 0 0 8px var(--glow-amber);
-        }
-
-        /* ===== SCREEN 3: DETAILS & FORECASTS ===== */
-        .screen-3 {
-            background: linear-gradient(180deg, #0A1A2A 0%, var(--bg-darker) 100%);
-        }
-
-        .screen-3 .header {
-            text-align: center;
-            font-size: 20px;
-            color: var(--accent-amber);
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-        }
-
-        .screen-3 .content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            flex: 1;
-        }
-
-        .screen-3 .section {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            flex: 1;
-        }
-
-        .screen-3 .section-header {
-            font-size: 14px;
-            color: var(--accent-amber);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .screen-3 .forecast-chart {
-            height: 200px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            font-size: 12px;
-        }
-
-        .screen-3 .impact-map {
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            font-size: 12px;
-        }
-
-        .screen-3 .ai-recommendations {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .screen-3 .recommendation-item {
-            background: rgba(77, 208, 225, 0.05);
-            border-left: 2px solid var(--accent-cyan);
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: var(--text-primary);
-        }
-
-        .screen-3 .metrics {
-            display: flex;
-            gap: 20px;
-        }
-
-        .screen-3 .metric-item {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-        }
-
-        .screen-3 .metric-item .value {
-            font-family: var(--font-mono);
-            font-size: 24px;
-            color: var(--accent-amber);
-        }
-
-        .screen-3 .metric-item .label {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        /* ===== NAVIGATION ===== */
-        .screen-navigation {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .screen-navigation button {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            color: var(--text-secondary);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .screen-navigation button:hover {
-            background: var(--accent-cyan);
-            color: var(--bg-dark);
-        }
-
-        .screen-navigation button.active {
-            background: var(--accent-cyan);
-            color: var(--bg-dark);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1800px) {
-            .screen-2 .left-panel { width: 20%; }
-            .screen-2 .center-panel { width: 40%; }
-            .screen-2 .right-panel { width: 30%; }
-        }
-
-        @media (max-width: 1200px) {
-            .screens-container { width: 100%; }
-            .screen { width: 100%; }
-            .screen-navigation { display: none; }
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px var(--glow-cyan); }
-            50% { box-shadow: 0 0 20px var(--glow-cyan); }
-        }
-
-        .glow {
-            animation: glow 2s infinite;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TERSANESI STREAM™ | Holographic Dashboard</title>
+  <style>
+    :root {
+      --cyan: #00E5FF;
+      --cyan-dim: #00B8D4;
+      --cyan-glow: rgba(0, 229, 255, 0.45);
+      --orange: #FF9F43;
+      --orange-glow: rgba(255, 159, 67, 0.5);
+      --bg: #05060F;
+      --panel: rgba(6, 14, 28, 0.92);
+      --border: rgba(0, 229, 255, 0.22);
+      --text: #E0F7FA;
+      --muted: #5A8A9C;
+      --radius: 6px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      font-family: var(--font);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .loading {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.7s ease;
+    }
+    .loading.hidden { opacity: 0; pointer-events: none; }
+    .loading .logo {
+      font-size: 36px; font-weight: 300; letter-spacing: 8px;
+      color: var(--muted); margin-bottom: 18px;
+    }
+    .loading .logo strong { color: var(--cyan); font-weight: 700; }
+    .loading .bar {
+      width: 180px; height: 2px;
+      background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;
+    }
+    .loading .bar .fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--orange));
+      transition: width 0.25s ease;
+    }
+    .loading .ver {
+      font-family: var(--mono); font-size: 10px;
+      color: var(--muted); margin-top: 14px; letter-spacing: 2px;
+    }
+
+    .dashboard {
+      width: 100vw; height: 100vh;
+      display: flex; flex-direction: column;
+      background: radial-gradient(ellipse at 50% 40%, #0A1525 0%, #05060F 70%);
+      position: relative;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .dashboard.curved {
+      transform: perspective(1400px) rotateX(6deg) scale(0.96);
+      transform-origin: center 60%;
+    }
+
+    .top-bar {
+      height: 38px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px;
+      background: rgba(4, 8, 16, 0.75);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      z-index: 20;
+    }
+    .brand {
+      font-size: 15px; font-weight: 700; letter-spacing: 2.5px;
+      color: var(--cyan);
+      text-shadow: 0 0 18px var(--cyan-glow);
+    }
+    .brand span { font-weight: 300; color: var(--muted); font-size: 11px; margin-left: 4px; }
+    .brand .tm { font-size: 9px; vertical-align: super; }
+
+    .top-controls {
+      display: flex; align-items: center; gap: 14px;
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+    }
+    .top-controls .dot {
+      width: 5px; height: 5px; border-radius: 50%; display: inline-block; margin-right: 4px;
+    }
+    .dot.live { background: var(--orange); box-shadow: 0 0 8px var(--orange-glow); }
+    .dot.online { background: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.4); }
+    .dot.cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+
+    .view-toggle {
+      display: flex; background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .view-toggle button {
+      background: transparent; border: none; color: var(--muted);
+      font-family: var(--mono); font-size: 9px; padding: 3px 10px;
+      cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .view-toggle button.active {
+      background: rgba(0, 229, 255, 0.18);
+      color: var(--cyan);
+    }
+    .view-toggle button:hover:not(.active) { color: var(--text); }
+
+    .main {
+      flex: 1; display: flex; gap: 6px;
+      padding: 6px 10px; min-height: 0;
+    }
+
+    .col-left, .col-right {
+      width: 168px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 5px;
+      overflow-y: auto;
+    }
+    .col-center {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    .widget {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 0 24px rgba(0, 229, 255, 0.04), inset 0 0 16px rgba(0, 229, 255, 0.03);
+      display: flex; flex-direction: column;
+      overflow: hidden; position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .widget:hover {
+      border-color: rgba(0, 229, 255, 0.45);
+      box-shadow: 0 0 32px rgba(0, 229, 255, 0.12);
+    }
+    .widget-h {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 2px 7px; min-height: 18px;
+      background: rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.08);
+      font-size: 7px; letter-spacing: 0.6px; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .widget-b {
+      flex: 1; padding: 4px 7px 5px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    .w1 { height: 78px; }
+    .w2 { height: 58px; }
+    .w3 { height: 58px; }
+    .w4 { height: 62px; }
+    .w5 { height: 62px; }
+    .w6 { height: 58px; }
+    .w7 { height: 62px; }
+    .w8 { height: 58px; }
+    .w9 { height: 70px; }
+    .w10 { height: 58px; }
+    .w11 { height: 70px; }
+
+    .num {
+      font-family: var(--mono); font-weight: 700; line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 16px var(--cyan-glow);
+    }
+    .num.lg { font-size: 26px; color: var(--cyan); }
+    .num.md { font-size: 20px; color: var(--cyan); }
+    .num.amber { color: var(--orange); text-shadow: 0 0 14px var(--orange-glow); }
+    .num.green { color: #66BB6A; text-shadow: 0 0 12px rgba(102,187,106,0.4); }
+
+    .label {
+      font-size: 7px; color: var(--muted); text-align: center;
+      letter-spacing: 0.8px; text-transform: uppercase; margin-top: 2px;
+    }
+    .sub {
+      font-size: 7px; color: var(--cyan-dim); text-align: center;
+      opacity: 0.8; margin-top: 1px;
+    }
+
+    .bars {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 2px; height: 28px; padding: 2px 0;
+    }
+    .bars span {
+      flex: 1; max-width: 10px; border-radius: 1px 1px 0 0;
+      min-height: 2px; transition: height 0.5s ease;
+    }
+    .bars .c { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
+    .bars .o { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
+    .bars .p { background: #AB47BC; }
+
+    .metrics {
+      display: flex; justify-content: space-around; gap: 2px;
+    }
+    .metrics .m { text-align: center; flex: 1; }
+    .metrics .m .v {
+      font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--cyan);
+    }
+    .metrics .m .v.a { color: var(--orange); }
+    .metrics .m .v.g { color: #66BB6A; }
+    .metrics .m .v.r { color: #EF5350; }
+    .metrics .m .l {
+      font-size: 5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px;
+    }
+
+    .status-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .ring {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid rgba(0,229,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; flex-shrink: 0;
+    }
+    .ring::before {
+      content: ''; position: absolute; inset: -2px;
+      border-radius: 50%; border: 2px solid transparent;
+      border-top-color: var(--cyan);
+      animation: spin 2.8s linear infinite;
+    }
+    .ring .inner {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: rgba(0,229,255,0.08);
+      font-family: var(--mono); font-size: 5px; font-weight: 700;
+      color: var(--cyan); display: flex; align-items: center; justify-content: center;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .channels {
+      display: flex; flex-wrap: wrap; gap: 2px;
+    }
+    .ch {
+      font-size: 7px; padding: 1px 5px; border-radius: 3px;
+      background: rgba(0,229,255,0.06); color: var(--muted);
+      font-family: var(--mono);
+    }
+    .ch.on { background: rgba(0,229,255,0.15); color: var(--cyan); }
+
+    .globe-wrap {
+      flex: 1; position: relative;
+      background: radial-gradient(ellipse at center, #06101C 0%, #020208 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: inset 0 0 60px rgba(0, 180, 255, 0.06);
+      min-height: 180px;
+    }
+    #globeCanvas {
+      width: 100%; height: 100%; display: block;
+    }
+
+    .globe-label {
+      position: absolute; bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+      color: var(--muted);
+      background: rgba(0,0,0,0.55);
+      padding: 3px 12px; border-radius: 12px;
+      border: 1px solid var(--border);
+      pointer-events: none; z-index: 5;
+    }
+
+    .globe-legend {
+      position: absolute; bottom: 10px; right: 10px;
+      font-family: var(--mono); font-size: 7px; color: var(--muted);
+      background: rgba(0,0,0,0.45); padding: 4px 8px;
+      border-radius: 4px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 2px;
+      pointer-events: none; z-index: 5;
+    }
+    .globe-legend span { display: flex; align-items: center; gap: 4px; }
+    .globe-legend i {
+      width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+    }
+    .globe-legend .c { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
+    .globe-legend .o { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
+
+    .mini-globe {
+      position: absolute; bottom: 12px; left: 12px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,229,255,0.3);
+      overflow: hidden; z-index: 8;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      cursor: pointer; transition: transform 0.25s, border-color 0.25s;
+      background: radial-gradient(ellipse at center, #06101C, #020208);
+    }
+    .mini-globe:hover {
+      transform: scale(1.06);
+      border-color: var(--cyan);
+    }
+    #miniCanvas { width: 100%; height: 100%; display: block; border-radius: 50%; }
+    .mini-label {
+      position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+      font-family: var(--mono); font-size: 5px; letter-spacing: 1px;
+      color: var(--muted); background: rgba(0,0,0,0.6);
+      padding: 1px 6px; border-radius: 6px; pointer-events: none;
+    }
+
+    .bottom {
+      height: 64px; flex-shrink: 0;
+      display: flex; gap: 5px;
+      padding: 0 10px 6px;
+    }
+    .bottom .widget { flex: 1; min-width: 0; height: 100%; }
+
+    .bottom .row {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      font-size: 8px; color: var(--muted);
+    }
+    .bottom .tag {
+      font-family: var(--mono); font-size: 6px;
+      background: rgba(0,229,255,0.08); padding: 1px 5px;
+      border-radius: 2px; color: var(--muted);
+    }
+    .bottom .badge {
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5px; font-weight: 700; color: #05060F;
+    }
+    .bottom .badge.eu { background: var(--cyan); }
+    .bottom .badge.br { background: var(--orange); }
+    .bottom .badge.ai { background: #AB47BC; }
+
+    .forecast-num {
+      font-family: var(--mono); font-size: 18px; font-weight: 700;
+      color: var(--orange); text-shadow: 0 0 12px var(--orange-glow);
+    }
+    .progress {
+      flex: 1; height: 3px; background: rgba(255,255,255,0.06);
+      border-radius: 2px; overflow: hidden;
+    }
+    .progress .fill {
+      height: 100%; width: 78%;
+      background: linear-gradient(90deg, var(--orange), #EF5350);
+      border-radius: 2px;
+    }
+
+    .footer {
+      height: 20px; flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 14px;
+      background: rgba(4, 8, 16, 0.7);
+      border-top: 1px solid rgba(0,229,255,0.1);
+      font-family: var(--mono); font-size: 7px; color: var(--muted);
+      letter-spacing: 0.4px;
+    }
+    .footer .r { display: flex; gap: 12px; align-items: center; }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media (max-width: 1200px) {
+      .col-left, .col-right { width: 140px; }
+      .num.lg { font-size: 22px; }
+      .mini-globe { width: 70px; height: 70px; }
+    }
+    @media (max-width: 900px) {
+      .col-left, .col-right { width: 110px; }
+      .num.lg { font-size: 18px; }
+      .bottom { height: 52px; }
+    }
+  </style>
 </head>
 <body>
-    <!-- SCREEN NAVIGATION -->
-    <div class="screen-navigation">
-        <button onclick="switchScreen(0)" class="active">1</button>
-        <button onclick="switchScreen(1)">2</button>
-        <button onclick="switchScreen(2)">3</button>
+
+  <div class="loading" id="loading">
+    <div class="logo">TERSANESI <strong>STREAM</strong><span class="tm">™</span></div>
+    <div class="bar"><div class="fill" id="loadFill"></div></div>
+    <div class="ver">Holographic Dashboard · v5.0</div>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+
+    <div class="top-bar">
+      <div class="brand">TERSANESI <span>STREAM</span><span class="tm">™</span></div>
+      <div class="top-controls">
+        <span><i class="dot live"></i>LIVE</span>
+        <span><i class="dot cyan"></i>41,622 EVENTS</span>
+        <span><i class="dot online"></i>AI ONLINE</span>
+        <span id="clock">14:22 CET</span>
+        <div class="view-toggle">
+          <button id="btnFlat" class="active">FLAT</button>
+          <button id="btnCurved">CURVED</button>
+        </div>
+      </div>
     </div>
 
-    <!-- SCREENS CONTAINER -->
-    <div class="screens-container" id="screensContainer">
-        <!-- SCREEN 1: ANALYTICS -->
-        <div class="screen screen-1">
-            <div class="header">ANALYTICS & DATA</div>
-            <div class="metrics-container">
-                <div class="metric">
-                    <div class="metric-value">41,822</div>
-                    <div class="metric-label">TOTAL EVENTS</div>
-                </div>
-                <div class="metric-secondary">
-                    <div class="metric-secondary-item">
-                        <div class="value">0.63</div>
-                        <div class="label">EVENTS/SEC</div>
-                    </div>
-                    <div class="metric-secondary-item">
-                        <div class="value">4.822K</div>
-                        <div class="label">EVENTS/MIN</div>
-                    </div>
-                </div>
-                <div class="charts-container">
-                    <div class="chart">Event Frequency Chart</div>
-                    <div class="chart">Activity Heatmap</div>
-                    <div class="chart">Channel Distribution</div>
-                </div>
-            </div>
-        </div>
+    <div class="main">
 
-        <!-- SCREEN 2: MAIN STREAM -->
-        <div class="screen screen-2">
-            <div class="header">
-                <div class="logo">TERSANESI STREAM™ <span>ONE STREAM. EVERY WORLD.</span></div>
-                <div class="status-bar">
-                    <div class="status-item live dot">LIVE</div>
-                    <div class="status-item">GLOBAL EVENT STREAM</div>
-                    <div class="status-item">11:32 CET</div>
-                    <div class="status-item ai dot">AI ONLINE</div>
-                    <div class="status-item">4,821 EVENTS/MIN</div>
-                </div>
-            </div>
-            <div class="main-content">
-                <div class="left-panel">
-                    <div class="channel-item active">
-                        <div class="icon">🌍</div>
-                        <div class="name">EARTH</div>
-                        <div class="count">4,821</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🚀</div>
-                        <div class="name">SPACE</div>
-                        <div class="count">1,203</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🌊</div>
-                        <div class="name">OCEAN</div>
-                        <div class="count">892</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🤖</div>
-                        <div class="name">AI</div>
-                        <div class="count">2,456</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🔬</div>
-                        <div class="name">SCIENCE</div>
-                        <div class="count">678</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">📈</div>
-                        <div class="name">MARKETS</div>
-                        <div class="count">3,120</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🏛️</div>
-                        <div class="name">CIVILIZATION</div>
-                        <div class="count">1,987</div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="icon">🎯</div>
-                        <div class="name">MISSION</div>
-                        <div class="count">412</div>
-                    </div>
-                </div>
-                <div class="center-panel">
-                    <div class="event-card selected">
-                        <div class="event-header">
-                            <div class="event-channel">EARTH</div>
-                            <div class="event-meta">
-                                <span class="impact high">HIGH</span>
-                                <span class="confidence">AI CONFIDENCE: 94%</span>
-                            </div>
-                        </div>
-                        <div class="event-title">EUROPE INFRASTRUCTURE UPDATE</div>
-                        <div class="event-description">
-                            Major rail network disruption in Central Europe. Expected delays in freight and passenger transport.
-                        </div>
-                        <div class="event-meta">
-                            <span>11:32 CET</span>
-                            <span>Brussels, EU</span>
-                            <span>Source: ESA</span>
-                        </div>
-                        <div class="event-tags">
-                            <span>#Infrastructure</span>
-                            <span>#Transport</span>
-                            <span>#EU</span>
-                            <span>#Rail</span>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div class="event-channel">SPACE</div>
-                            <div class="event-meta">
-                                <span class="impact">MODERATE</span>
-                                <span class="confidence">AI CONFIDENCE: 87%</span>
-                            </div>
-                        </div>
-                        <div class="event-title">SOLAR WEATHER ALERT</div>
-                        <div class="event-description">
-                            Geomagnetic storm expected in 12 hours. Potential impact on satellite communications.
-                        </div>
-                        <div class="event-meta">
-                            <span>11:28 CET</span>
-                            <span>Low Earth Orbit</span>
-                            <span>Source: NOAA</span>
-                        </div>
-                        <div class="event-tags">
-                            <span>#SpaceWeather</span>
-                            <span>#Satellite</span>
-                            <span>#Storm</span>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div class="event-channel">AI</div>
-                            <div class="event-meta">
-                                <span class="impact high">HIGH</span>
-                                <span class="confidence">AI CONFIDENCE: 99%</span>
-                            </div>
-                        </div>
-                        <div class="event-title">AUTONOMOUS AGENT SYSTEM UPDATE</div>
-                        <div class="event-description">
-                            New neural network deployed for real-time analysis. Improved accuracy in event classification.
-                        </div>
-                        <div class="event-meta">
-                            <span>11:25 CET</span>
-                            <span>Global</span>
-                            <span>Source: DeepSeek</span>
-                        </div>
-                        <div class="event-tags">
-                            <span>#NeuralNetwork</span>
-                            <span>#Intelligence</span>
-                            <span>#Update</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="right-panel">
-                    <div class="intelligence-header">EVENT INTELLIGENCE</div>
-                    <div class="intelligence-section">
-                        <h3>WHAT HAPPENED</h3>
-                        <p>Major rail network disruption in Central Europe due to a technical failure in the Brussels hub.</p>
-                    </div>
-                    <div class="intelligence-section">
-                        <h3>WHERE</h3>
-                        <p>Brussels, Belgium (50.8503° N, 4.3517° E)</p>
-                    </div>
-                    <div class="intelligence-section">
-                        <h3>ENTITIES</h3>
-                        <p>
-                            <span style="color: var(--accent-amber);">EU Commission</span>, 
-                            <span style="color: var(--accent-amber);">Deutsche Bahn</span>
-                        </p>
-                    </div>
-                    <div class="intelligence-section">
-                        <h3>IMPACT</h3>
-                        <p><span style="color: var(--accent-red);">HIGH</span>: Transport disruption, economic impact estimated at €50M.</p>
-                    </div>
-                    <div class="relationship-graph">3D Relationship Graph</div>
-                </div>
-            </div>
-            <div class="lower-panel">
-                <div class="world-map">
-                    <div class="map-cluster" style="top: 20%; left: 40%;"></div>
-                    <div class="map-cluster amber" style="top: 30%; left: 60%;"></div>
-                    <div class="map-cluster" style="top: 40%; left: 20%;"></div>
-                </div>
-            </div>
+      <div class="col-left">
+        <div class="widget w1">
+          <div class="widget-h">◈ GLOBAL STREAM</div>
+          <div class="widget-b">
+            <div class="num lg">1.15221</div>
+            <div class="label">Primary Index</div>
+            <div class="sub">↑ 12.4% · LIVE</div>
+          </div>
         </div>
+        <div class="widget w2">
+          <div class="widget-h">⚡ EVENTS / MIN</div>
+          <div class="widget-b">
+            <div class="num md amber">4.822</div>
+            <div class="label">Throughput</div>
+            <div class="sub">Peak 6.1K</div>
+          </div>
+        </div>
+        <div class="widget w3">
+          <div class="widget-h">🤖 AI CONFIDENCE</div>
+          <div class="widget-b">
+            <div class="num md green">94.2%</div>
+            <div class="label">Model Score</div>
+            <div class="sub">↑ 2.1%</div>
+          </div>
+        </div>
+        <div class="widget w4">
+          <div class="widget-h">📈 FREQUENCY</div>
+          <div class="widget-b">
+            <div class="bars" id="barsFreq">
+              <span class="c" style="height:40%"></span>
+              <span class="c" style="height:65%"></span>
+              <span class="c" style="height:80%"></span>
+              <span class="c" style="height:50%"></span>
+              <span class="c" style="height:90%"></span>
+              <span class="c" style="height:70%"></span>
+              <span class="c" style="height:55%"></span>
+              <span class="c" style="height:95%"></span>
+              <span class="c" style="height:45%"></span>
+              <span class="c" style="height:75%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="widget w5">
+          <div class="widget-h">🔥 HEATMAP</div>
+          <div class="widget-b">
+            <div class="bars" id="barsHeat">
+              <span class="o" style="height:30%"></span>
+              <span class="o" style="height:55%"></span>
+              <span class="o" style="height:75%"></span>
+              <span class="o" style="height:90%"></span>
+              <span class="o" style="height:60%"></span>
+              <span class="o" style="height:40%"></span>
+              <span class="o" style="height:85%"></span>
+              <span class="o" style="height:70%"></span>
+              <span class="o" style="height:50%"></span>
+              <span class="o" style="height:65%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="widget w6">
+          <div class="widget-h">◈ STATUS</div>
+          <div class="widget-b">
+            <div class="status-row">
+              <div class="ring"><div class="inner">SYS</div></div>
+              <div>
+                <div style="font-size:10px;font-weight:600;color:#66BB6A;">● ACTIVE</div>
+                <div style="font-size:6px;color:var(--muted);">All nodes online</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <!-- SCREEN 3: DETAILS & FORECASTS -->
-        <div class="screen screen-3">
-            <div class="header">DETAILS & FORECASTS</div>
-            <div class="content">
-                <div class="section">
-                    <div class="section-header">EVENT DETAILS</div>
-                    <p style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">
-                        Full report on the selected event, including historical context, related entities, and real-time updates.
-                    </p>
-                </div>
-                <div class="section">
-                    <div class="section-header">AI FORECAST</div>
-                    <div class="forecast-chart">Predictive Model: 78% Probability of Escalation</div>
-                </div>
-                <div class="section">
-                    <div class="section-header">IMPACT MAP</div>
-                    <div class="impact-map">Visualization of Event Influence Across Channels</div>
-                </div>
-                <div class="section">
-                    <div class="section-header">AI RECOMMENDATIONS</div>
-                    <div class="ai-recommendations">
-                        <div class="recommendation-item">▶ Activate Protocol Alpha-7</div>
-                        <div class="recommendation-item">▶ Notify EU Transport Operators</div>
-                        <div class="recommendation-item">▶ Monitor Satellite Communications</div>
-                    </div>
-                </div>
-                <div class="section">
-                    <div class="section-header">SYSTEM METRICS</div>
-                    <div class="metrics">
-                        <div class="metric-item">
-                            <div class="value">98%</div>
-                            <div class="label">CPU LOAD</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="value">2.4K</div>
-                            <div class="label">QUERIES/SEC</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="value">ONLINE</div>
-                            <div class="label">AI STATUS</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="col-center">
+        <div class="globe-wrap" id="globeWrap">
+          <canvas id="globeCanvas"></canvas>
+          <div class="globe-label">● GLOBAL EVENT MONITORING</div>
+          <div class="globe-legend">
+            <span><i class="c"></i> Active</span>
+            <span><i class="o"></i> High Impact</span>
+          </div>
+          <div class="mini-globe" id="miniWrap" title="Focus Earth">
+            <canvas id="miniCanvas"></canvas>
+            <div class="mini-label">GLOBE</div>
+          </div>
         </div>
+      </div>
+
+      <div class="col-right">
+        <div class="widget w7">
+          <div class="widget-h">📊 DISTRIBUTION</div>
+          <div class="widget-b">
+            <div class="bars">
+              <span class="p" style="height:55%"></span>
+              <span class="c" style="height:80%"></span>
+              <span class="o" style="height:45%"></span>
+              <span class="c" style="height:70%"></span>
+              <span class="p" style="height:60%"></span>
+              <span class="o" style="height:90%"></span>
+              <span class="c" style="height:50%"></span>
+              <span class="p" style="height:65%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="widget w8">
+          <div class="widget-h">📊 METRICS</div>
+          <div class="widget-b">
+            <div class="metrics">
+              <div class="m"><div class="v">72%</div><div class="l">Load</div></div>
+              <div class="m"><div class="v a">94%</div><div class="l">Acc</div></div>
+              <div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div>
+              <div class="m"><div class="v r">3</div><div class="l">Crit</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="widget w9">
+          <div class="widget-h">⚡ AI STATUS</div>
+          <div class="widget-b">
+            <div class="status-row">
+              <div class="ring"><div class="inner">AI</div></div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#66BB6A;">● ONLINE</div>
+                <div style="font-size:6px;color:var(--muted);">Active · 94.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="widget w10">
+          <div class="widget-h">◈ SIGNAL</div>
+          <div class="widget-b">
+            <div class="bars">
+              <span class="c" style="height:35%"></span>
+              <span class="c" style="height:60%"></span>
+              <span class="c" style="height:45%"></span>
+              <span class="c" style="height:80%"></span>
+              <span class="c" style="height:55%"></span>
+              <span class="c" style="height:70%"></span>
+              <span class="c" style="height:90%"></span>
+              <span class="c" style="height:40%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="widget w11">
+          <div class="widget-h">🌍 CHANNELS</div>
+          <div class="widget-b" style="padding:3px 5px;">
+            <div class="channels">
+              <span class="ch on">🌍 4.8K</span>
+              <span class="ch">🚀 1.2K</span>
+              <span class="ch">🌊 892</span>
+              <span class="ch">🤖 2.4K</span>
+              <span class="ch">🔬 678</span>
+              <span class="ch">📈 3.1K</span>
+              <span class="ch">🏛️ 1.9K</span>
+              <span class="ch">🎯 412</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // Switch between screens
-        let currentScreen = 0;
-        const screensContainer = document.getElementById('screensContainer');
-        const screenButtons = document.querySelectorAll('.screen-navigation button');
+    <div class="bottom">
+      <div class="widget">
+        <div class="widget-h">🧠 INTELLIGENCE</div>
+        <div class="widget-b">
+          <div class="row">
+            <span>Rail disruption · Brussels</span>
+            <span style="color:#EF5350;font-weight:700;font-size:7px;">HIGH</span>
+            <span style="margin-left:auto;display:flex;gap:4px;">
+              <span class="badge eu">EU</span>
+              <span class="badge br">BR</span>
+              <span class="badge ai">AI</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-h">📋 EVENT</div>
+        <div class="widget-b">
+          <div class="row">
+            <span style="color:var(--text);font-weight:600;">Europe Infrastructure</span>
+            <span>11:32 CET</span>
+            <span class="tag">#Infra</span>
+            <span class="tag">#EU</span>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-h">🔮 FORECAST</div>
+        <div class="widget-b">
+          <div class="row" style="gap:8px;">
+            <div class="forecast-num">78%</div>
+            <div style="flex:1;">
+              <div style="font-size:6px;margin-bottom:2px;">Escalation risk</div>
+              <div class="progress"><div class="fill"></div></div>
+            </div>
+            <span style="font-size:6px;">87% conf</span>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-h">💡 RECS</div>
+        <div class="widget-b">
+          <div class="row" style="gap:3px;">
+            <span class="tag">▶ Protocol A-7</span>
+            <span class="tag">▶ Notify EU</span>
+            <span class="tag">▶ Monitor Sat</span>
+            <span class="tag">▶ Reroute</span>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-h">📊 SYS</div>
+        <div class="widget-b">
+          <div class="metrics">
+            <div class="m"><div class="v">72%</div><div class="l">CPU</div></div>
+            <div class="m"><div class="v a">94%</div><div class="l">Acc</div></div>
+            <div class="m"><div class="v g">12ms</div><div class="l">Lat</div></div>
+            <div class="m"><div class="v g">●</div><div class="l">AI</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        function switchScreen(screenIndex) {
-            currentScreen = screenIndex;
-            screensContainer.style.transform = `translateX(-${screenIndex * 100}%)`;
-            screenButtons.forEach((button, index) => {
-                button.classList.toggle('active', index === screenIndex);
-            });
+    <div class="footer">
+      <span>TERSANESI STREAM™ · Holographic Dashboard · v5.0</span>
+      <div class="r">
+        <span><i class="dot online" style="margin-right:3px;"></i>Online</span>
+        <span>● 4,821 events/min</span>
+        <span>● TLS 1.3</span>
+        <span>© 2026 · Confidential</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    (function initLoading() {
+      let p = 0;
+      const fill = document.getElementById('loadFill');
+      const iv = setInterval(() => {
+        p += Math.random() * 18 + 6;
+        if (p >= 100) {
+          p = 100;
+          clearInterval(iv);
+          fill.style.width = '100%';
+          setTimeout(() => {
+            document.getElementById('loading').classList.add('hidden');
+            initApp();
+          }, 350);
         }
+        fill.style.width = Math.min(p, 100) + '%';
+      }, 90);
+    })();
 
-        // Auto-switch screens every 10 seconds (for demo purposes)
-        setInterval(() => {
-            currentScreen = (currentScreen + 1) % 3;
-            switchScreen(currentScreen);
-        }, 10000);
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = h + ':' + m + ' CET';
+    }
+    setInterval(updateClock, 30000);
+    updateClock();
 
-        // Select Event Card
-        document.querySelectorAll('.event-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.event-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-            });
+    const dashboard = document.getElementById('dashboard');
+    const btnFlat = document.getElementById('btnFlat');
+    const btnCurved = document.getElementById('btnCurved');
+
+    btnFlat.addEventListener('click', () => {
+      dashboard.classList.remove('curved');
+      btnFlat.classList.add('active');
+      btnCurved.classList.remove('active');
+    });
+    btnCurved.addEventListener('click', () => {
+      dashboard.classList.add('curved');
+      btnCurved.classList.add('active');
+      btnFlat.classList.remove('active');
+    });
+
+    document.querySelectorAll('.ch').forEach(el => {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.ch').forEach(c => c.classList.remove('on'));
+        el.classList.add('on');
+      });
+    });
+
+    function animateBars() {
+      document.querySelectorAll('.bars span').forEach((bar, i) => {
+        const h = bar.style.height;
+        bar.style.height = '2%';
+        setTimeout(() => { bar.style.height = h; }, 40 + i * 25);
+      });
+    }
+
+    let scene, camera, renderer, controls;
+    let earth, atmosphere, ring, hotspots = [];
+    let animId;
+
+    function initApp() {
+      initGlobe();
+      initMiniGlobe();
+      animateBars();
+    }
+
+    function initGlobe() {
+      const container = document.getElementById('globeWrap');
+      const canvas = document.getElementById('globeCanvas');
+      const w = container.clientWidth || 700;
+      const h = container.clientHeight || 420;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x05060F);
+
+      camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 200);
+      camera.position.set(0, 0.8, 8.8);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.25;
+
+      controls = new THREE.OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.07;
+      controls.minDistance = 5.5;
+      controls.maxDistance = 16;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.55;
+      controls.target.set(0, 0, 0);
+
+      buildHolographicEarth();
+      animateGlobe(0);
+
+      window.addEventListener('resize', onResize);
+      document.getElementById('miniWrap').addEventListener('click', () => {
+        controls.autoRotate = false;
+        camera.position.set(0, 0.8, 8.8);
+        controls.target.set(0, 0, 0);
+        controls.update();
+        setTimeout(() => { controls.autoRotate = true; }, 1800);
+      });
+    }
+
+    function buildHolographicEarth() {
+      const R = 3.45;
+      const SEG = 96;
+      const loader = new THREE.TextureLoader();
+
+      // Real Earth texture with strong cyan holographic treatment
+      const map = loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+      const earthGeo = new THREE.SphereGeometry(R, SEG, SEG);
+      const earthMat = new THREE.MeshPhongMaterial({
+        map: map,
+        color: 0x88DDFF,
+        emissive: 0x003355,
+        emissiveIntensity: 0.65,
+        transparent: true,
+        opacity: 0.95,
+        shininess: 25,
+        specular: 0x226688
+      });
+      earth = new THREE.Mesh(earthGeo, earthMat);
+      scene.add(earth);
+
+      // Cyan wireframe grid (subtle holographic overlay)
+      const wireGeo = new THREE.SphereGeometry(R * 1.004, 48, 32);
+      const wireMat = new THREE.MeshBasicMaterial({
+        color: 0x00E5FF,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.08
+      });
+      scene.add(new THREE.Mesh(wireGeo, wireMat));
+
+      // Strong cyan atmosphere shell
+      const atmosGeo = new THREE.SphereGeometry(R * 1.035, 64, 64);
+      const atmosMat = new THREE.MeshBasicMaterial({
+        color: 0x00E5FF,
+        transparent: true,
+        opacity: 0.14,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      atmosphere = new THREE.Mesh(atmosGeo, atmosMat);
+      scene.add(atmosphere);
+
+      // Outer soft bloom shell
+      const glowGeo = new THREE.SphereGeometry(R * 1.14, 48, 48);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: 0x00B8D4,
+        transparent: true,
+        opacity: 0.07,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      scene.add(new THREE.Mesh(glowGeo, glowMat));
+
+      // === POWERFUL CYAN RING (matches original photos) ===
+      // Outer soft ring
+      const ringOuter = new THREE.Mesh(
+        new THREE.RingGeometry(R * 1.22, R * 1.48, 128),
+        new THREE.MeshBasicMaterial({
+          color: 0x00E5FF,
+          transparent: true,
+          opacity: 0.28,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      ringOuter.rotation.x = Math.PI / 2.08;
+      scene.add(ringOuter);
+
+      // Main bright ring
+      const ringGeo = new THREE.RingGeometry(R * 1.28, R * 1.42, 128);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x00E5FF,
+        transparent: true,
+        opacity: 0.72,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2.08;
+      scene.add(ring);
+
+      // Bright core of the ring
+      const ringCore = new THREE.Mesh(
+        new THREE.RingGeometry(R * 1.32, R * 1.38, 128),
+        new THREE.MeshBasicMaterial({
+          color: 0xE0FFFF,
+          transparent: true,
+          opacity: 0.9,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      ringCore.rotation.x = Math.PI / 2.08;
+      scene.add(ringCore);
+
+      // === ORANGE / AMBER HOTSPOTS (strong, matching photos) ===
+      const hotZones = [
+        // Americas – strong
+        { lat: 38, lon: -97, scale: 1.15, intensity: 0.95 },
+        { lat: -12, lon: -55, scale: 0.95, intensity: 0.85 },
+        // Africa – very strong (original has bright orange Africa)
+        { lat: 5, lon: 20, scale: 1.2, intensity: 1.0 },
+        { lat: -20, lon: 25, scale: 0.7, intensity: 0.75 },
+        // Europe / Middle East
+        { lat: 45, lon: 15, scale: 0.55, intensity: 0.7 },
+        { lat: 28, lon: 45, scale: 0.6, intensity: 0.8 },
+        // Asia – strong
+        { lat: 35, lon: 105, scale: 1.25, intensity: 0.95 },
+        { lat: 55, lon: 40, scale: 0.6, intensity: 0.6 },
+        // Australia
+        { lat: -25, lon: 135, scale: 0.7, intensity: 0.85 }
+      ];
+
+      hotZones.forEach((z, i) => {
+        const phi = (90 - z.lat) * Math.PI / 180;
+        const theta = (z.lon + 180) * Math.PI / 180;
+        const pos = new THREE.Vector3(
+          -R * 1.018 * Math.sin(phi) * Math.cos(theta),
+           R * 1.018 * Math.cos(phi),
+           R * 1.018 * Math.sin(phi) * Math.sin(theta)
+        );
+
+        // Large soft orange glow
+        const hGeo = new THREE.CircleGeometry(0.72 * z.scale, 32);
+        const hMat = new THREE.MeshBasicMaterial({
+          color: 0xFF9F43,
+          transparent: true,
+          opacity: 0.55 * z.intensity,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
         });
+        const disc = new THREE.Mesh(hGeo, hMat);
+        disc.position.copy(pos);
+        disc.lookAt(0, 0, 0);
+        disc.userData = { baseOp: 0.42 * z.intensity, phase: i * 0.6 };
+        scene.add(disc);
+        hotspots.push(disc);
 
-        // Select Channel
-        document.querySelectorAll('.channel-item').forEach(channel => {
-            channel.addEventListener('click', () => {
-                document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
-                channel.classList.add('active');
-            });
+        // Hot core
+        const cGeo = new THREE.CircleGeometry(0.28 * z.scale, 20);
+        const cMat = new THREE.MeshBasicMaterial({
+          color: 0xFFB74D,
+          transparent: true,
+          opacity: 0.8 * z.intensity,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
         });
-    </script>
+        const core = new THREE.Mesh(cGeo, cMat);
+        core.position.copy(pos.clone().multiplyScalar(1.003));
+        core.lookAt(0, 0, 0);
+        scene.add(core);
+      });
+
+      // Cyan city markers
+      const cities = [
+        [40.7, -74], [51.5, -0.1], [35.7, 139.7], [-33.9, 151.2],
+        [55.8, 37.6], [39.9, 116.4], [-22.9, -43.2], [30.0, 31.2],
+        [25.2, 55.3], [1.35, 103.8], [19.4, -99.1], [-26.2, 28.0]
+      ];
+      cities.forEach(([lat, lon], i) => {
+        const phi = (90 - lat) * Math.PI / 180;
+        const theta = (lon + 180) * Math.PI / 180;
+        const pos = new THREE.Vector3(
+          -R * 1.03 * Math.sin(phi) * Math.cos(theta),
+           R * 1.03 * Math.cos(phi),
+           R * 1.03 * Math.sin(phi) * Math.sin(theta)
+        );
+        const m = new THREE.Mesh(
+          new THREE.CircleGeometry(0.08, 12),
+          new THREE.MeshBasicMaterial({
+            color: 0x00E5FF,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          })
+        );
+        m.position.copy(pos);
+        m.lookAt(0, 0, 0);
+        m.userData = { phase: i * 0.45 };
+        scene.add(m);
+        hotspots.push(m);
+      });
+
+      // Stars
+      const starsGeo = new THREE.BufferGeometry();
+      const posArr = new Float32Array(2200 * 3);
+      for (let i = 0; i < 2200; i++) {
+        const r = 95 * Math.cbrt(Math.random());
+        const th = Math.random() * Math.PI * 2;
+        const ph = Math.acos(2 * Math.random() - 1);
+        posArr[i*3]   = r * Math.sin(ph) * Math.cos(th);
+        posArr[i*3+1] = r * Math.cos(ph);
+        posArr[i*3+2] = r * Math.sin(ph) * Math.sin(th);
+      }
+      starsGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({
+        size: 0.065, color: 0xffffff, transparent: true, opacity: 0.7, sizeAttenuation: true
+      })));
+
+      // Lighting – cooler, more holographic
+      const key = new THREE.DirectionalLight(0xAAEEFF, 1.1);
+      key.position.set(6, 5, 14);
+      scene.add(key);
+      scene.add(new THREE.AmbientLight(0x113355, 0.55));
+      scene.add(new THREE.HemisphereLight(0x00E5FF, 0x001122, 0.35));
+    }
+
+    function animateGlobe(t) {
+      animId = requestAnimationFrame(animateGlobe);
+
+      if (earth) earth.rotation.y += 0.0006;
+      if (atmosphere) atmosphere.rotation.y += 0.0004;
+      if (ring) ring.rotation.z += 0.0008;
+
+      const pt = t * 0.001;
+      hotspots.forEach((h) => {
+        if (h.userData.baseOp !== undefined) {
+          h.material.opacity = h.userData.baseOp * (0.75 + 0.25 * Math.sin(pt * 1.8 + h.userData.phase));
+        } else {
+          const s = 1 + 0.15 * Math.sin(pt * 2.2 + (h.userData.phase || 0));
+          h.scale.set(s, s, s);
+        }
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      const container = document.getElementById('globeWrap');
+      if (!container || !renderer || !camera) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+
+    let miniScene, miniCam, miniRen, miniEarth;
+
+    function initMiniGlobe() {
+      const canvas = document.getElementById('miniCanvas');
+      const wrap = document.getElementById('miniWrap');
+      const w = wrap.clientWidth || 90;
+      const h = wrap.clientHeight || 90;
+
+      miniScene = new THREE.Scene();
+      miniScene.background = new THREE.Color(0x05060F);
+
+      miniCam = new THREE.PerspectiveCamera(30, w / h, 0.1, 50);
+      miniCam.position.set(0, 0, 4.2);
+
+      miniRen = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      miniRen.setSize(w, h);
+      miniRen.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const geo = new THREE.SphereGeometry(1.25, 32, 32);
+      const mat = new THREE.MeshPhongMaterial({
+        color: 0x0A1A2A,
+        emissive: 0x003344,
+        emissiveIntensity: 0.4,
+        transparent: true,
+        opacity: 0.9
+      });
+      miniEarth = new THREE.Mesh(geo, mat);
+      miniScene.add(miniEarth);
+
+      const wire = new THREE.Mesh(
+        new THREE.SphereGeometry(1.26, 20, 14),
+        new THREE.MeshBasicMaterial({ color: 0x00E5FF, wireframe: true, transparent: true, opacity: 0.15 })
+      );
+      miniScene.add(wire);
+
+      const atmos = new THREE.Mesh(
+        new THREE.SphereGeometry(1.32, 24, 24),
+        new THREE.MeshBasicMaterial({
+          color: 0x00E5FF, transparent: true, opacity: 0.08,
+          side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false
+        })
+      );
+      miniScene.add(atmos);
+
+      miniScene.add(new THREE.AmbientLight(0x112233, 0.5));
+      const l = new THREE.DirectionalLight(0xAADDFF, 0.7);
+      l.position.set(4, 3, 5);
+      miniScene.add(l);
+
+      (function loop() {
+        requestAnimationFrame(loop);
+        if (miniEarth) miniEarth.rotation.y += 0.008;
+        miniRen.render(miniScene, miniCam);
+      })();
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (animId) cancelAnimationFrame(animId);
+      if (renderer) renderer.dispose();
+      if (miniRen) miniRen.dispose();
+    });
+  </script>
 </body>
 </html>
