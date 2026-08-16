@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>TERSANESI ∞ Cosmic AI Runtime | Quadrant Cosmos Engine</title>
+    <meta name="description" content="Tersanesi Engineering — AI-native runtime for MMO strategy, metaverse worlds, multi-agent swarms and cosmic-scale simulations.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #ffd966;
+            --primary-glow: rgba(255, 217, 0, 0.4);
+            --secondary: #00c8ff;
+            --secondary-glow: rgba(0, 200, 255, 0.3);
+            --dark-bg: #05050f;
+            --light-text: #f0f0f0;
+            --card-bg: rgba(8, 12, 25, 0.65);
+            --border-neon: rgba(0, 200, 255, 0.4);
+        }
+        body {
+            background-color: #000000;
+            color: var(--light-text);
+            font-family: 'Segoe UI', 'Orbitron', 'Courier New', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .quad-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .quadrant {
+            position: relative;
+            overflow: hidden;
+            background: #000000;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: inset 0 0 30px rgba(0, 180, 255, 0.1);
+        }
+        .divider-vertical {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,255,255,0), cyan, rgba(0,255,255,0));
+            z-index: 30;
+            pointer-events: none;
+            transform: translateX(-50%);
+            box-shadow: 0 0 12px cyan;
+        }
+        .divider-horizontal {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, rgba(0,255,255,0), cyan, rgba(0,255,255,0));
+            z-index: 30;
+            pointer-events: none;
+            transform: translateY(-50%);
+            box-shadow: 0 0 12px cyan;
+        }
+        .q1 { background: radial-gradient(ellipse at 30% 40%, #0a0f1f 0%, #010101 100%); }
+        .hyper-grid-q1 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
+            background-size: 45px 45px;
+            animation: driftGrid 35s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes driftGrid { 0% { transform: translate(0,0); } 100% { transform: translate(45px,45px); } }
+        .theta-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 30% 30%, rgba(0,150,255,0.3), rgba(0,10,40,0.9));
+            border-radius: 50%;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0,255,255,0.8);
+            box-shadow: 0 0 45px cyan;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseGlow 2.5s infinite alternate;
+            z-index: 10;
+        }
+        .theta-symbol { font-size: 4.5rem; font-weight: bold; background: linear-gradient(135deg,#ffffff,#00ccff,#0088ff); -webkit-background-clip: text; background-clip: text; color: transparent; animation: thetaPulse 1.8s infinite alternate; }
+        @keyframes pulseGlow { 0% { box-shadow:0 0 15px rgba(0,200,255,0.4); transform:translate(-50%,-50%) scale(0.96); } 100% { box-shadow:0 0 55px cyan; transform:translate(-50%,-50%) scale(1.05); } }
+        @keyframes thetaPulse { 0% { opacity:0.7; } 100% { opacity:1; text-shadow:0 0 35px cyan; } }
+        .particle-canvas-q1 { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:5; }
+        .label-q { position: absolute; bottom:12px; left:12px; color:rgba(0,255,255,0.6); font-size:10px; font-family:monospace; background:rgba(0,0,0,0.5); padding:3px 10px; border-radius:16px; backdrop-filter:blur(4px); z-index:20; }
+        .q2 { background: #010418; }
+        .q3 { background: radial-gradient(circle at 20% 30%, #0a0e2a, #020005); }
+        .nebula-swirl { position:absolute; width:100%; height:100%; background:radial-gradient(ellipse at 40% 50%, rgba(255,80,120,0.15), transparent 70%), radial-gradient(ellipse at 80% 20%, rgba(80,150,255,0.2), transparent 60%); filter:blur(35px); animation:nebulaDrift 18s infinite alternate; pointer-events:none; }
+        @keyframes nebulaDrift { 0% { transform:scale(1); opacity:0.6; } 100% { transform:scale(1.2) translate(3%,2%); opacity:1; } }
+        .warp-particles { position:absolute; width:100%; height:100%; background:repeating-linear-gradient(90deg, rgba(0,255,200,0.08) 0px, rgba(0,255,200,0.08) 2px, transparent 2px, transparent 8px); animation:slideWarp 0.8s linear infinite; pointer-events:none; }
+        @keyframes slideWarp { 0% { background-position:0 0; } 100% { background-position:20px 0; } }
+        .ring-planet { position:absolute; top:55%; left:50%; width:130px; height:130px; transform:translate(-50%,-50%); border-radius:50%; background:radial-gradient(circle,#88aaff,#2a3f6e); box-shadow:0 0 40px rgba(100,160,255,0.6); animation:floatPlanet 9s infinite ease-in-out; }
+        .ring { position:absolute; top:50%; left:50%; width:190px; height:45px; border:2px solid rgba(0,200,255,0.7); border-radius:50%; transform:translate(-50%,-50%) rotateX(70deg); background:radial-gradient(ellipse, rgba(0,255,200,0.2), transparent); box-shadow:0 0 18px cyan; animation:spinRing 10s linear infinite; }
+        @keyframes spinRing { from { transform:translate(-50%,-50%) rotateX(70deg) rotateZ(0deg); } to { transform:translate(-50%,-50%) rotateX(70deg) rotateZ(360deg); } }
+        @keyframes floatPlanet { 0% { transform:translate(-50%,-50%) translateY(0px); } 100% { transform:translate(-50%,-50%) translateY(-15px); } }
+        .q4 { background: #03030f; }
+        .data-stream { position:absolute; width:100%; height:100%; background:linear-gradient(0deg, rgba(0,255,200,0.03) 1px, transparent 1px); background-size:100% 4px; animation:scrollData 2s linear infinite; pointer-events:none; }
+        @keyframes scrollData { 0% { background-position:0 0; } 100% { background-position:0 20px; } }
+        .glitch-matrix { position:absolute; width:100%; height:100%; background:repeating-linear-gradient(0deg, rgba(0,255,200,0.1) 0px, rgba(0,255,200,0.1) 1px, transparent 1px, transparent 6px); mix-blend-mode:overlay; animation:flicker 0.15s infinite alternate; }
+        @keyframes flicker { 0% { opacity:0.3; } 100% { opacity:0.8; } }
+        .cyber-lattice { position:absolute; bottom:15%; right:10%; width:180px; height:180px; border:1px solid rgba(0,255,200,0.4); border-radius:30% 70% 70% 30% / 30% 30% 70% 70%; filter:blur(4px); animation:morphShape 12s infinite alternate; background:radial-gradient(circle, rgba(0,255,200,0.1), transparent); }
+        @keyframes morphShape { 0% { border-radius:30% 70% 70% 30% / 30% 30% 70% 70%; transform:rotate(0deg); } 100% { border-radius:70% 30% 30% 70% / 60% 40% 60% 40%; transform:rotate(15deg); } }
+        .quantum-text { position:absolute; top:20%; left:10%; font-size:0.8rem; color:#0cf; font-family:monospace; white-space:pre; opacity:0.7; animation:textFlicker 3s infinite; }
+        @keyframes textFlicker { 0%,100% { opacity:0.5; } 50% { opacity:1; text-shadow:0 0 10px cyan; } }
+        .content-overlay { position: relative; z-index: 100; }
+        .fusion-header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: rgba(0,0,0,0.55); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,215,0,0.3); position: sticky; top: 0; z-index: 101; }
+        .brand { font-size: 1.9rem; font-weight: 800; font-family: 'Orbitron', monospace; background: linear-gradient(135deg,#FFE6A3,#FFC857,#ffd966); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 0.2rem; }
+        .brand span { color: var(--secondary); background: none; }
+        .lang-nav a { color: #ddd; margin-left: 1.2rem; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; transition: 0.2s; cursor: pointer; font-family: inherit; }
+        .lang-nav a:hover { color: var(--primary); }
+        .lang-nav a.active { color: var(--primary); border-bottom: 1px solid var(--primary); }
+        .hero-fusion { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding: 4rem 6% 6rem; position: relative; }
+        .hero-inner { max-width: 55%; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); border-radius: 32px; padding: 2rem 2.5rem; border-left: 5px solid var(--primary); border-right: 1px solid rgba(255,255,255,0.1); animation: slideUpFade 0.9s ease-out; }
+        @keyframes slideUpFade { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+        .hero-title { font-size: 2.8rem; font-weight: 800; background: linear-gradient(120deg,#FFE6A3,#FFC857); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-tag { color: var(--secondary); font-size: 1.2rem; letter-spacing: 2px; margin: 0.5rem 0 1rem; text-transform: uppercase; }
+        .hero-desc { color: #ccc; margin: 1rem 0 1.5rem; font-size: 1rem; border-left: 2px solid gold; padding-left: 1rem; }
+        .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0 1rem; }
+        .btn-fusion { padding: 0.7rem 1.8rem; border-radius: 40px; background: transparent; border: 1.5px solid var(--primary); color: var(--primary); font-weight: bold; transition: 0.2s; text-decoration: none; backdrop-filter: blur(4px); cursor: pointer; display: inline-block; }
+        .btn-fusion:hover { background: var(--primary); color: #0a0a1a; box-shadow: 0 0 14px var(--primary-glow); }
+        .btn-ai { border-color: var(--secondary); color: var(--secondary); }
+        .btn-ai:hover { background: var(--secondary); color: #000; box-shadow: 0 0 12px var(--secondary-glow); }
+        .section-dark { padding: 5rem 6%; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,215,0,0.2); border-bottom: 1px solid rgba(0,200,255,0.15); }
+        .section-title { text-align: center; font-size: 2rem; color: var(--primary); letter-spacing: 2px; margin-bottom: 2.5rem; }
+        .cap-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.8rem; }
+        .cap-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid rgba(255,215,0,0.3); border-radius: 28px; padding: 1.6rem; width: 280px; transition: all 0.25s; text-align: center; }
+        .cap-card:hover { transform: translateY(-6px); border-color: var(--secondary); box-shadow: 0 12px 28px rgba(0,0,0,0.6),0 0 8px rgba(0,200,255,0.3); }
+        .cap-icon { font-size: 2.6rem; margin-bottom: 0.8rem; }
+        .cap-card h3 { color: #ffeaac; }
+        .cap-card p { font-size: 0.85rem; color: #bcbcd0; }
+        .layers-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .layer-card { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); border-radius: 28px; padding: 1.5rem; width: 260px; border: 1px solid var(--border-neon); text-align: center; }
+        .layer-card h4 { color: var(--secondary); font-size: 1.5rem; }
+        .streams-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 1.5rem; }
+        .stream-badge { background: rgba(0,0,0,0.7); border-radius: 60px; padding: 0.5rem 1.4rem; font-weight: bold; border-left: 3px solid var(--primary); }
+        .audience-flex { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem; }
+        .audience-tag { background: rgba(0,170,255,0.15); padding: 0.5rem 1.5rem; border-radius: 40px; font-weight: 500; border: 1px solid rgba(0,200,255,0.3); }
+        .cta-cosmic { background: linear-gradient(145deg,#03030e,#000000); padding: 3rem 5%; text-align: center; border-top: 1px solid rgba(255,215,0,0.3); }
+        .form-fusion { max-width: 520px; margin: 2rem auto 0; display: flex; flex-direction: column; gap: 1rem; }
+        .form-fusion input, .form-fusion textarea { background: #0a0a18; border: 1px solid #2a2a55; padding: 0.8rem 1.2rem; border-radius: 60px; color: white; font-family: monospace; }
+        .form-fusion input:focus, .form-fusion textarea:focus { border-color: var(--primary); outline: none; }
+        .form-fusion button { background: var(--primary); border: none; padding: 0.8rem; border-radius: 60px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .form-fusion button:hover { background: #ffea90; box-shadow: 0 0 12px gold; }
+        footer { padding: 2rem; text-align: center; font-size: 0.7rem; color: #888; }
+        @media (max-width:1000px) { .hero-inner { max-width:80%; } }
+        @media (max-width:750px) { .hero-inner { max-width:95%; padding:1.5rem; } .hero-title { font-size:2rem; } .theta-symbol { font-size:2.5rem; } .theta-core { width:100px; height:100px; } .ring-planet { width:80px; height:80px; } .ring { width:130px; height:30px; } .cyber-lattice { width:100px; height:100px; } .quantum-text { font-size:0.55rem; top:15%; } }
+    </style>
+</head>
+<body>
+
+<div class="quad-grid">
+    <div class="quadrant q1"><div class="hyper-grid-q1"></div><canvas id="particleCanvasQ1" class="particle-canvas-q1"></canvas><div class="theta-core"><div class="theta-symbol">θ</div></div><div class="label-q">◬ TERSANESI · θ CORE</div></div>
+    <div class="quadrant q2" id="three-container-q2"><div class="label-q">⛭ ORBITAL REEF · 3D HABITAT</div></div>
+    <div class="quadrant q3"><div class="nebula-swirl"></div><div class="warp-particles"></div><div class="ring-planet"><div class="ring"></div></div><div class="label-q">🌀 NEBULA WARP · PROTEAN RIFT</div></div>
+    <div class="quadrant q4"><div class="data-stream"></div><div class="glitch-matrix"></div><div class="cyber-lattice"></div><div class="quantum-text">&gt; AETHER:// QUANTUM_FLOW<br>&gt; NODE_θ ACTIVE<br>&gt; REALITY_FRAGMENT 0x7F</div><div class="label-q">⎔ DIGITAL AETHER · CHAOS ENGINE</div></div>
+    <div class="divider-vertical"></div><div class="divider-horizontal"></div>
+</div>
+
+<div class="content-overlay">
+    <header class="fusion-header">
+        <div class="brand">T.E.R.S.A.<span>N</span>.E.S.I. ⬩ AI RUNTIME</div>
+        <div class="lang-nav">
+            <a data-lang="en">EN</a>
+            <a data-lang="tr">TR</a>
+            <a data-lang="ru">RU</a>
+            <a data-lang="es">ES</a>
+            <a data-lang="zh">中文</a>
+        </div>
+    </header>
+
+    <section class="hero-fusion">
+        <div class="hero-inner">
+            <h1 class="hero-title" data-key="hero_title">T.E.R.S.A.N.E.S.I.<br>Cosmic AI‑Native Runtime</h1>
+            <div class="hero-tag" data-key="hero_tag">✦ INTELLIGENCE THAT TRANSFORMS · INFRASTRUCTURE THAT SCALES ✦</div>
+            <p class="hero-desc" data-key="hero_desc">Versatile Engineering for MMO strategy, metaverse worlds & multi-agent orchestration. AI-native kernel with typed event fabric, real-time elasticity, and infinite scalability.</p>
+            <div class="cta-group">
+                <a class="btn-fusion" data-key="btn_initiate">⚡ Initiate Runtime</a>
+                <a class="btn-fusion btn-ai" data-key="btn_explore">⟡ Explore AI Core</a>
+            </div>
+            <div style="margin-top:1rem; font-size:0.8rem; color:#aaf0ff;" data-key="version">v.Orbit.3 · dynamic agent fabric + generative intelligence</div>
+        </div>
+    </section>
+
+    <section class="section-dark">
+        <h2 class="section-title" data-key="core_title">⟡ Core Capabilities ⟡</h2>
+        <div class="cap-grid">
+            <div class="cap-card"><div class="cap-icon">🌌</div><h3 data-key="cap1_title">Cosmic Scalability</h3><p data-key="cap1_desc">From agent swarms to persistent worlds — infinite horizon.</p></div>
+            <div class="cap-card"><div class="cap-icon">🤖</div><h3 data-key="cap2_title">AI-Native Integration</h3><p data-key="cap2_desc">LLM decision flows, generative narratives & adaptive agents.</p></div>
+            <div class="cap-card"><div class="cap-icon">🎮</div><h3 data-key="cap3_title">MMO Strategy Core</h3><p data-key="cap3_desc">Low-latency events, real-time economy, browser-native depth.</p></div>
+            <div class="cap-card"><div class="cap-icon">🕸️</div><h3 data-key="cap4_title">Multi-Agent Orchestration</h3><p data-key="cap4_desc">Typed state, feedback loops, swarm coordination.</p></div>
+            <div class="cap-card"><div class="cap-icon">⚙️</div><h3 data-key="cap5_title">Predictive AI & Security</h3><p data-key="cap5_desc">Quantum-ready cybersecurity & advanced analytics.</p></div>
+        </div>
+    </section>
+
+    <section style="padding:3rem 6%; text-align:center;">
+        <h2 class="section-title" data-key="layers_title">✦ THREE-LAYER COSMIC ECOSYSTEM ✦</h2>
+        <div class="layers-container">
+            <div class="layer-card"><h4>🏛️ TERSANESI</h4><p data-key="layer1_desc">Conceptual Runtime · Agent orchestration kernel · AI-native fabric</p></div>
+            <div class="layer-card"><h4>🎮 Cavibara</h4><p data-key="layer2_desc">Implementation Layer · UI/API/WebSocket · Economy logic & dashboard</p></div>
+            <div class="layer-card"><h4>🌌 Wellamatores</h4><p data-key="layer3_desc">Narrative Universe · Lore, factions, ARG puzzles, WebGL worlds</p></div>
+        </div>
+        <p style="color:#bbbbdd;" data-key="data_streams_hint">Typed Data Streams: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue</p>
+    </section>
+
+    <section class="section-dark">
+        <h2 class="section-title" data-key="streams_title">📡 Typed Event Streams & AI Feedback</h2>
+        <div class="streams-row">
+            <div class="stream-badge" data-key="stream1">🤖 AgentEvent → directives</div>
+            <div class="stream-badge" data-key="stream2">🏛️ FactionState → alignment</div>
+            <div class="stream-badge" data-key="stream3">💰 EconomicTx ↔ resource flows</div>
+            <div class="stream-badge" data-key="stream4">🕵️ ARGClue → narrative expansion</div>
+            <div class="stream-badge" data-key="stream5">🧠 LLM Inference → generative events</div>
+        </div>
+        <p style="text-align:center; margin-top:2rem; font-size:0.9rem;" data-key="streams_note">strict schemas · deterministic propagation · adaptive feedback loops</p>
+    </section>
+
+    <section style="padding:3rem 6%; background:rgba(0,0,0,0.3);">
+        <div style="max-width:900px; margin:0 auto; text-align:center;">
+            <div style="font-size:2rem; color:var(--primary);" data-key="infra_title">∞ Infinity‑Ready Infrastructure</div>
+            <p style="margin:1rem 0;" data-key="infra_desc">Dynamic horizontal expansion · real-time elasticity · AI‑first orchestration for metaverse and browser MMO strategy. Native support for React, WebSockets, FastAPI, Three.js & Go.</p>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1.2rem; margin-top:1rem;">
+                <span style="background:rgba(0,0,0,0.6); padding:0.4rem 1.2rem; border-radius:40px;" data-key="tag1">🧠 AI-First Kernel</span>
+                <span style="background:rgba(0,0,0,0.6); padding:0.4rem 1.2rem; border-radius:40px;" data-key="tag2">✨ Multi-Versal Ready</span>
+                <span style="background:rgba(0,0,0,0.6); padding:0.4rem 1.2rem; border-radius:40px;" data-key="tag3">⚡ Reactive Agents</span>
+                <span style="background:rgba(0,0,0,0.6); padding:0.4rem 1.2rem; border-radius:40px;" data-key="tag4">🔒 Quantum Cybersecurity</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-dark">
+        <h2 class="section-title" data-key="audience_title">🎯 Prime Constructs — Target Audience</h2>
+        <div class="audience-flex">
+            <div class="audience-tag" data-key="aud1">AI Application Developers</div>
+            <div class="audience-tag" data-key="aud2">Metaverse Architects</div>
+            <div class="audience-tag" data-key="aud3">MMO Strategy Specialists</div>
+            <div class="audience-tag" data-key="aud4">Multi-Agent Designers</div>
+            <div class="audience-tag" data-key="aud5">Web3 Worldbuilders</div>
+            <div class="audience-tag" data-key="aud6">Space-Tech Engineers</div>
+        </div>
+        <div style="text-align:center; margin-top:2.5rem;">
+            <h3 style="color:var(--secondary);" data-key="stack_title">⚙️ Technology Stack</h3>
+            <div style="display:flex; justify-content:center; gap:1.8rem; flex-wrap:wrap; margin:1rem 0;">
+                <span>⚛️ React</span> <span>🔌 WebSocket</span> <span>🐍 FastAPI</span> <span>🌐 Three.js</span> <span>✨ WebGL</span> <span>🦫 Python/Go</span>
+            </div>
+            <p style="color:#aaa;" data-key="stack_desc">Runtime layer agnostic — cloud, edge, or local swarm.</p>
+        </div>
+    </section>
+
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2rem; padding:2rem 6%; background:radial-gradient(circle at 20% 30%, rgba(0,0,0,0.8), #000);">
+        <div style="flex:1; min-width:240px; background:rgba(0,0,0,0.65); backdrop-filter:blur(12px); border-radius:28px; padding:1.5rem; border-left:4px solid var(--primary);">
+            <h3 style="color:#FFD966;" data-key="mission_title">✦ STRATEGIC MISSION</h3>
+            <p style="color:#ddd;" data-key="mission_desc">Empowering organizations with next-gen AI, deep learning, and advanced analytics. Redefining cosmic runtime boundaries.</p>
+        </div>
+        <div style="flex:1; min-width:240px; background:rgba(0,0,0,0.65); backdrop-filter:blur(12px); border-radius:28px; padding:1.5rem; border-left:4px solid var(--secondary);">
+            <h3 style="color:var(--secondary);" data-key="commitment_title">✦ ABSOLUTE COMMITMENT</h3>
+            <p style="color:#ddd;" data-key="commitment_desc">Quantum security, tech excellence, and applied ethics. Driving success with integrity and digital resilience.</p>
+        </div>
+    </div>
+
+    <section class="cta-cosmic">
+        <h2 class="section-title" style="margin-bottom:0.5rem;" data-key="cta_title">⟡ Engage the Nexus ⟡</h2>
+        <p data-key="cta_sub">Join the AI-native frontier · Pioneer multi-agent orchestration & cosmic simulations</p>
+        <form class="form-fusion" id="nexusForm">
+            <input type="text" placeholder="Cosmonaut / Studio Name" id="name" data-key="placeholder_name" required>
+            <input type="email" placeholder="Quantum address (email)" id="email" data-key="placeholder_email" required>
+            <textarea placeholder="Describe your MMO strategy, metaverse world or AI project..." rows="2" id="projectDesc" data-key="placeholder_desc" required></textarea>
+            <button type="submit" data-key="btn_submit">🚀 Deploy Intelligence Query</button>
+        </form>
+        <p style="margin-top:1.5rem; font-size:0.8rem;" data-key="cta_footer">⚡ Three layers · Typed schemas · AI runtime ready</p>
+    </section>
+
+    <footer>
+        <p data-key="footer1">© 2026 T.E.R.S.A.N.E.S.I. — Versatile Engineering Runtime for Cosmic Engineering Lifecycles | Advanced AI Intelligence Division</p>
+        <p data-key="footer2">🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores &nbsp; • AI-native orchestration • Metaverse MMO Infrastructure</p>
+        <div style="margin-top:0.6rem;">
+            <a href="#" style="color:#aaa; margin:0 0.5rem;" data-key="footer_link1">Runtime Whitepaper</a>
+            <a href="#" style="color:#aaa; margin:0 0.5rem;" data-key="footer_link2">Agent SDK</a>
+            <a href="#" style="color:#aaa; margin:0 0.5rem;" data-key="footer_link3">Cosmic Status</a>
+        </div>
+    </footer>
+</div>
+
+<script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.128.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/" } }
+</script>
+
+<script>
+    // ======================== ПЕРЕВОДЫ ========================
+    const translations = {
+        en: {
+            hero_title: "T.E.R.S.A.N.E.S.I.<br>Cosmic AI‑Native Runtime",
+            hero_tag: "✦ INTELLIGENCE THAT TRANSFORMS · INFRASTRUCTURE THAT SCALES ✦",
+            hero_desc: "Versatile Engineering for MMO strategy, metaverse worlds & multi-agent orchestration. AI-native kernel with typed event fabric, real-time elasticity, and infinite scalability.",
+            btn_initiate: "⚡ Initiate Runtime",
+            btn_explore: "⟡ Explore AI Core",
+            version: "v.Orbit.3 · dynamic agent fabric + generative intelligence",
+            core_title: "⟡ Core Capabilities ⟡",
+            cap1_title: "Cosmic Scalability", cap1_desc: "From agent swarms to persistent worlds — infinite horizon.",
+            cap2_title: "AI-Native Integration", cap2_desc: "LLM decision flows, generative narratives & adaptive agents.",
+            cap3_title: "MMO Strategy Core", cap3_desc: "Low-latency events, real-time economy, browser-native depth.",
+            cap4_title: "Multi-Agent Orchestration", cap4_desc: "Typed state, feedback loops, swarm coordination.",
+            cap5_title: "Predictive AI & Security", cap5_desc: "Quantum-ready cybersecurity & advanced analytics.",
+            layers_title: "✦ THREE-LAYER COSMIC ECOSYSTEM ✦",
+            layer1_desc: "Conceptual Runtime · Agent orchestration kernel · AI-native fabric",
+            layer2_desc: "Implementation Layer · UI/API/WebSocket · Economy logic & dashboard",
+            layer3_desc: "Narrative Universe · Lore, factions, ARG puzzles, WebGL worlds",
+            data_streams_hint: "Typed Data Streams: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue",
+            streams_title: "📡 Typed Event Streams & AI Feedback",
+            stream1: "🤖 AgentEvent → directives", stream2: "🏛️ FactionState → alignment", stream3: "💰 EconomicTx ↔ resource flows", stream4: "🕵️ ARGClue → narrative expansion", stream5: "🧠 LLM Inference → generative events",
+            streams_note: "strict schemas · deterministic propagation · adaptive feedback loops",
+            infra_title: "∞ Infinity‑Ready Infrastructure",
+            infra_desc: "Dynamic horizontal expansion · real-time elasticity · AI‑first orchestration for metaverse and browser MMO strategy. Native support for React, WebSockets, FastAPI, Three.js & Go.",
+            tag1: "🧠 AI-First Kernel", tag2: "✨ Multi-Versal Ready", tag3: "⚡ Reactive Agents", tag4: "🔒 Quantum Cybersecurity",
+            audience_title: "🎯 Prime Constructs — Target Audience",
+            aud1: "AI Application Developers", aud2: "Metaverse Architects", aud3: "MMO Strategy Specialists", aud4: "Multi-Agent Designers", aud5: "Web3 Worldbuilders", aud6: "Space-Tech Engineers",
+            stack_title: "⚙️ Technology Stack", stack_desc: "Runtime layer agnostic — cloud, edge, or local swarm.",
+            mission_title: "✦ STRATEGIC MISSION", mission_desc: "Empowering organizations with next-gen AI, deep learning, and advanced analytics. Redefining cosmic runtime boundaries.",
+            commitment_title: "✦ ABSOLUTE COMMITMENT", commitment_desc: "Quantum security, tech excellence, and applied ethics. Driving success with integrity and digital resilience.",
+            cta_title: "⟡ Engage the Nexus ⟡", cta_sub: "Join the AI-native frontier · Pioneer multi-agent orchestration & cosmic simulations",
+            placeholder_name: "Cosmonaut / Studio Name", placeholder_email: "Quantum address (email)", placeholder_desc: "Describe your MMO strategy, metaverse world or AI project...", btn_submit: "🚀 Deploy Intelligence Query",
+            cta_footer: "⚡ Three layers · Typed schemas · AI runtime ready",
+            footer1: "© 2026 T.E.R.S.A.N.E.S.I. — Versatile Engineering Runtime for Cosmic Engineering Lifecycles | Advanced AI Intelligence Division",
+            footer2: "🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores   • AI-native orchestration • Metaverse MMO Infrastructure",
+            footer_link1: "Runtime Whitepaper", footer_link2: "Agent SDK", footer_link3: "Cosmic Status"
+        },
+        tr: {
+            hero_title: "T.E.R.S.A.N.E.S.I.<br>Kozmik AI‑Yerel Çalışma Zamanı",
+            hero_tag: "✦ DÖNÜŞTÜREN ZEKA · ÖLÇEKLENEN ALTYAPI ✦",
+            hero_desc: "MMO stratejisi, metaverse dünyaları ve çoklu-ajan orkestrasyonu için çok yönlü mühendislik. AI-yerel çekirdek, tipli olay dokusu, gerçek zamanlı esneklik ve sonsuz ölçeklenebilirlik.",
+            btn_initiate: "⚡ Çalışma Zamanını Başlat", btn_explore: "⟡ AI Çekirdeğini Keşfet",
+            version: "v.Orbit.3 · dinamik ajan dokusu + üretken zeka",
+            core_title: "⟡ Temel Yetenekler ⟡",
+            cap1_title: "Kozmik Ölçeklenebilirlik", cap1_desc: "Ajan sürülerinden kalıcı dünyalara — sonsuz ufuk.",
+            cap2_title: "AI-Yerel Entegrasyon", cap2_desc: "LLM karar akışları, üretken anlatılar ve uyarlanabilir ajanlar.",
+            cap3_title: "MMO Strateji Çekirdeği", cap3_desc: "Düşük gecikmeli olaylar, gerçek zamanlı ekonomi, tarayıcı yerel derinliği.",
+            cap4_title: "Çoklu-Ajan Orkestrasyonu", cap4_desc: "Tipli durum, geri bildirim döngüleri, sürü koordinasyonu.",
+            cap5_title: "Tahmine Dayalı AI ve Güvenlik", cap5_desc: "Kuantum-hazır siber güvenlik ve gelişmiş analitik.",
+            layers_title: "✦ ÜÇ KATMANLI KOZMIK EKOSISTEM ✦",
+            layer1_desc: "Kavramsal Çalışma Zamanı · Ajan orkestrasyon çekirdeği · AI-yerel dokusu",
+            layer2_desc: "Uygulama Katmanı · UI/API/WebSocket · Ekonomi mantığı ve paneli",
+            layer3_desc: "Anlatı Evreni · Tarihçe, gruplar, ARG bulmacaları, WebGL dünyaları",
+            data_streams_hint: "Tipli Veri Akışları: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue",
+            streams_title: "📡 Tipli Olay Akışları ve AI Geri Bildirimi",
+            stream1: "🤖 AgentEvent → yönergeler", stream2: "🏛️ FactionState → hizalama", stream3: "💰 EconomicTx ↔ kaynak akışları", stream4: "🕵️ ARGClue → anlatı genişlemesi", stream5: "🧠 LLM Çıkarımı → üretken olaylar",
+            streams_note: "katı şemalar · deterministik yayılma · uyarlanabilir geri bildirim döngüleri",
+            infra_title: "∞ Sonsuzluğa Hazır Altyapı",
+            infra_desc: "Dinamik yatay genişleme · gerçek zamanlı esneklik · metaverse ve tarayıcı MMO stratejisi için AI-ilk orkestrasyon. React, WebSockets, FastAPI, Three.js ve Go için yerel destek.",
+            tag1: "🧠 AI-İlk Çekirdek", tag2: "✨ Çok-Evren Hazır", tag3: "⚡ Reaktif Ajanlar", tag4: "🔒 Kuantum Siber Güvenlik",
+            audience_title: "🎯 Birincil Yapılar — Hedef Kitle",
+            aud1: "AI Uygulama Geliştiricileri", aud2: "Metaverse Mimarları", aud3: "MMO Strateji Uzmanları", aud4: "Çoklu-Ajan Tasarımcıları", aud5: "Web3 Dünya Kurucuları", aud6: "Uzay-Teknolojisi Mühendisleri",
+            stack_title: "⚙️ Teknoloji Yığını", stack_desc: "Çalışma zamanı katmanı bağımsız — bulut, uç veya yerel sürü.",
+            mission_title: "✦ STRATEJİK MİSYON", mission_desc: "Kurumları yeni nesil yapay zeka, derin öğrenme ve ileri analitik ile güçlendiriyoruz. Kozmik çalışma zamanı sınırlarını yeniden tanımlıyoruz.",
+            commitment_title: "✦ MUTLAK TAHAHHÜT", commitment_desc: "Kuantum güvenliği, teknolojik mükemmellik ve uygulamalı etik. Dürüstlük ve dijital dirençlilik ile başarıyı yönlendiriyoruz.",
+            cta_title: "⟡ Nexus'a Katıl ⟡", cta_sub: "AI-ilk ufka katıl · Çoklu-ajan orkestrasyonu ve kozmik simülasyonlara öncülük et",
+            placeholder_name: "Kozmonot / Stüdyo Adı", placeholder_email: "Kuantum adresi (e-posta)", placeholder_desc: "MMO stratejini, metaverse dünyanı veya AI projenizi anlat...", btn_submit: "🚀 Zeka Sorgusunu Dağıt",
+            cta_footer: "⚡ Üç katman · Tipli şemalar · AI çalışma zamanı hazır",
+            footer1: "© 2026 T.E.R.S.A.N.E.S.I. — Kozmik Mühendislik Yaşam Döngüleri için Çok Yönlü Mühendislik Çalışma Zamanı | Gelişmiş AI Zeka Bölümü",
+            footer2: "🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores   • AI-yerel orkestrasyon • Metaverse MMO Altyapısı",
+            footer_link1: "Çalışma Zamanı Beyaz Kitabı", footer_link2: "Ajan SDK", footer_link3: "Kozmik Durum"
+        },
+        ru: {
+            hero_title: "T.E.R.S.A.N.E.S.I.<br>Космическая AI‑Среда", hero_tag: "✦ ИНТЕЛЛЕКТ, КОТОРЫЙ ПРЕОБРАЗУЕТ · ИНФРАСТРУКТУРА, КОТОРАЯ МАСШТАБИРУЕТСЯ ✦",
+            hero_desc: "Универсальная инженерия для MMO-стратегий, миров метавселенной и мульти-агентной оркестрации. AI-родное ядро с типизированной событийной тканью, эластичностью в реальном времени и бесконечной масштабируемостью.",
+            btn_initiate: "⚡ Запустить среду", btn_explore: "⟡ Исследовать AI ядро", version: "v.Orbit.3 · динамическая агентная ткань + генеративный интеллект",
+            core_title: "⟡ Основные возможности ⟡",
+            cap1_title: "Космическая масштабируемость", cap1_desc: "От роев агентов до постоянных миров — бесконечный горизонт.",
+            cap2_title: "AI-родная интеграция", cap2_desc: "Потоки решений LLM, генеративные повествования и адаптивные агенты.",
+            cap3_title: "MMO Стратегия", cap3_desc: "События с низкой задержкой, экономика реального времени, браузерная глубина.",
+            cap4_title: "Мульти-агентная оркестрация", cap4_desc: "Типизированное состояние, петли обратной связи, координация роев.",
+            cap5_title: "Предиктивный AI и безопасность", cap5_desc: "Квантово-готовая кибербезопасность и расширенная аналитика.",
+            layers_title: "✦ ТРЁХУРОВНЕВАЯ КОСМИЧЕСКАЯ ЭКОСИСТЕМА ✦",
+            layer1_desc: "Концептуальная среда · Ядро оркестрации агентов · AI-родная ткань",
+            layer2_desc: "Уровень реализации · UI/API/WebSocket · Экономическая логика и панель",
+            layer3_desc: "Нарративная вселенная · История, фракции, ARG-головоломки, WebGL миры",
+            data_streams_hint: "Типизированные потоки данных: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue",
+            streams_title: "📡 Типизированные потоки событий и AI обратная связь",
+            stream1: "🤖 AgentEvent → директивы", stream2: "🏛️ FactionState → выравнивание", stream3: "💰 EconomicTx ↔ потоки ресурсов", stream4: "🕵️ ARGClue → расширение повествования", stream5: "🧠 LLM вывод → генеративные события",
+            streams_note: "строгие схемы · детерминированное распространение · адаптивные петли обратной связи",
+            infra_title: "∞ Готовая к бесконечности инфраструктура",
+            infra_desc: "Динамическое горизонтальное расширение · эластичность в реальном времени · AI-первая оркестрация для метавселенной и браузерных MMO стратегий. Родная поддержка React, WebSockets, FastAPI, Three.js и Go.",
+            tag1: "🧠 AI-Первое ядро", tag2: "✨ Готов к мультивселенной", tag3: "⚡ Реактивные агенты", tag4: "🔒 Квантовая кибербезопасность",
+            audience_title: "🎯 Ключевые конструкты — Целевая аудитория",
+            aud1: "AI разработчики", aud2: "Архитекторы метавселенных", aud3: "Специалисты MMO стратегий", aud4: "Дизайнеры мульти-агентных систем", aud5: "Создатели Web3 миров", aud6: "Космические инженеры",
+            stack_title: "⚙️ Технологический стек", stack_desc: "Независимость от слоя выполнения — облако, периферия или локальный рой.",
+            mission_title: "✦ СТРАТЕГИЧЕСКАЯ МИССИЯ", mission_desc: "Расширяем возможности организаций с помощью AI нового поколения, глубокого обучения и передовой аналитики. Переопределяем границы космической среды выполнения.",
+            commitment_title: "✦ АБСОЛЮТНАЯ ПРИВЕРЖЕННОСТЬ", commitment_desc: "Квантовая безопасность, технологическое совершенство и прикладная этика. Ведём к успеху с целостностью и цифровой устойчивостью.",
+            cta_title: "⟡ Подключиться к Нексусу ⟡", cta_sub: "Присоединяйтесь к AI-передовому рубежу · Будьте пионерами мульти-агентной оркестрации и космических симуляций",
+            placeholder_name: "Космонавт / Название студии", placeholder_email: "Квантовый адрес (email)", placeholder_desc: "Опишите вашу MMO стратегию, мир метавселенной или AI проект...", btn_submit: "🚀 Развернуть интеллектуальный запрос",
+            cta_footer: "⚡ Три слоя · Типизированные схемы · AI среда готова",
+            footer1: "© 2026 T.E.R.S.A.N.E.S.I. — Универсальная инженерная среда для космических инженерных циклов | Подразделение передового AI интеллекта",
+            footer2: "🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores   • AI-родная оркестрация • MMO инфраструктура метавселенной",
+            footer_link1: "Белая книга среды", footer_link2: "Agent SDK", footer_link3: "Космический статус"
+        },
+        es: {
+            hero_title: "T.E.R.S.A.N.E.S.I.<br>Runtime Cósmico AI‑Nativo", hero_tag: "✦ INTELIGENCIA QUE TRANSFORMA · INFRAESTRUCTURA QUE ESCALA ✦",
+            hero_desc: "Ingeniería versátil para estrategia MMO, mundos metaverso y orquestación multi-agente. Kernel AI-nativo con tejido de eventos tipados, elasticidad en tiempo real y escalabilidad infinita.",
+            btn_initiate: "⚡ Iniciar Runtime", btn_explore: "⟡ Explorar Núcleo AI", version: "v.Orbit.3 · tejido de agentes dinámico + inteligencia generativa",
+            core_title: "⟡ Capacidades Principales ⟡",
+            cap1_title: "Escalabilidad Cósmica", cap1_desc: "Desde enjambres de agentes hasta mundos persistentes — horizonte infinito.",
+            cap2_title: "Integración AI-Nativa", cap2_desc: "Flujos de decisión LLM, narrativas generativas y agentes adaptativos.",
+            cap3_title: "Núcleo Estrategia MMO", cap3_desc: "Eventos de baja latencia, economía en tiempo real, profundidad nativa del navegador.",
+            cap4_title: "Orquestación Multi-Agente", cap4_desc: "Estado tipado, bucles de retroalimentación, coordinación de enjambres.",
+            cap5_title: "AI Predictivo y Seguridad", cap5_desc: "Ciberseguridad preparada para cuántica y analítica avanzada.",
+            layers_title: "✦ ECOSISTEMA CÓSMICO DE TRES CAPAS ✦",
+            layer1_desc: "Runtime Conceptual · Núcleo de orquestación de agentes · Tejido AI-nativo",
+            layer2_desc: "Capa de Implementación · UI/API/WebSocket · Lógica económica y panel",
+            layer3_desc: "Universo Narrativo · Lore, facciones, puzzles ARG, mundos WebGL",
+            data_streams_hint: "Flujos de Datos Tipados: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue",
+            streams_title: "📡 Flujos de Eventos Tipados y Retroalimentación AI",
+            stream1: "🤖 AgentEvent → directivas", stream2: "🏛️ FactionState → alineación", stream3: "💰 EconomicTx ↔ flujos de recursos", stream4: "🕵️ ARGClue → expansión narrativa", stream5: "🧠 Inferencia LLM → eventos generativos",
+            streams_note: "esquemas estrictos · propagación determinista · bucles de retroalimentación adaptativos",
+            infra_title: "∞ Infraestructura Lista para el Infinito",
+            infra_desc: "Expansión horizontal dinámica · elasticidad en tiempo real · orquestación AI-primero para metaverso y estrategia MMO en navegador. Soporte nativo para React, WebSockets, FastAPI, Three.js y Go.",
+            tag1: "🧠 Núcleo AI-Primero", tag2: "✨ Listo para Multiverso", tag3: "⚡ Agentes Reactivos", tag4: "🔒 Ciberseguridad Cuántica",
+            audience_title: "🎯 Constructos Principales — Audiencia Objetivo",
+            aud1: "Desarrolladores de AI", aud2: "Arquitectos de Metaverso", aud3: "Especialistas en Estrategia MMO", aud4: "Diseñadores Multi-Agente", aud5: "Constructores de Mundos Web3", aud6: "Ingenieros Espaciales",
+            stack_title: "⚙️ Stack Tecnológico", stack_desc: "Independiente de la capa de runtime — nube, borde o enjambre local.",
+            mission_title: "✦ MISIÓN ESTRATÉGICA", mission_desc: "Potenciamos organizaciones mediante inteligencia artificial, deep learning y analítica de próxima generación. Innovación que redefine los límites del runtime cosmológico.",
+            commitment_title: "✦ COMPROMISO ABSOLUTO", commitment_desc: "Seguridad cuántica, excelencia tecnológica y ética aplicada. Impulsamos el éxito con integridad, vanguardia y resiliencia digital.",
+            cta_title: "⟡ Conéctate al Nexus ⟡", cta_sub: "Únete a la frontera AI-nativa · Pionero en orquestación multi-agente y simulaciones cósmicas",
+            placeholder_name: "Cosmonauta / Nombre de Estudio", placeholder_email: "Dirección cuántica (email)", placeholder_desc: "Describe tu estrategia MMO, mundo metaverso o proyecto AI...", btn_submit: "🚀 Desplegar Consulta de Inteligencia",
+            cta_footer: "⚡ Tres capas · Esquemas tipados · Runtime AI listo",
+            footer1: "© 2026 T.E.R.S.A.N.E.S.I. — Runtime de Ingeniería Versátil para Ciclos de Vida de Ingeniería Cósmica | División Avanzada de Inteligencia AI",
+            footer2: "🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores   • Orquestación AI-nativa • Infraestructura MMO Metaverso",
+            footer_link1: "Libro Blanco del Runtime", footer_link2: "Agent SDK", footer_link3: "Estado Cósmico"
+        },
+        zh: {
+            hero_title: "T.E.R.S.A.N.E.S.I.<br>宇宙级 AI 原生运行时",
+            hero_tag: "✦ 变革性智能 · 无限扩展的基础设施 ✦",
+            hero_desc: "面向 MMO 策略、元宇宙世界和多智能体编排的全能工程。AI 原生内核，具有类型化事件结构、实时弹性和无限可扩展性。",
+            btn_initiate: "⚡ 启动运行时", btn_explore: "⟡ 探索 AI 核心", version: "v.Orbit.3 · 动态智能体结构 + 生成式智能",
+            core_title: "⟡ 核心能力 ⟡",
+            cap1_title: "宇宙级可扩展性", cap1_desc: "从智能体集群到持久世界 — 无限视野。",
+            cap2_title: "AI 原生集成", cap2_desc: "LLM 决策流、生成式叙事与自适应智能体。",
+            cap3_title: "MMO 策略核心", cap3_desc: "低延迟事件、实时经济、浏览器原生深度。",
+            cap4_title: "多智能体编排", cap4_desc: "类型化状态、反馈循环、集群协调。",
+            cap5_title: "预测性 AI 与安全", cap5_desc: "量子就绪网络安全与高级分析。",
+            layers_title: "✦ 三层宇宙生态系统 ✦",
+            layer1_desc: "概念运行时 · 智能体编排内核 · AI 原生结构",
+            layer2_desc: "实现层 · UI/API/WebSocket · 经济逻辑与仪表板",
+            layer3_desc: "叙事宇宙 · 传说、派系、ARG 谜题、WebGL 世界",
+            data_streams_hint: "类型化数据流: AgentEvent → FactionState ↔ EconomicTx ⟡ ARGClue",
+            streams_title: "📡 类型化事件流与 AI 反馈",
+            stream1: "🤖 AgentEvent → 指令", stream2: "🏛️ FactionState → 对齐", stream3: "💰 EconomicTx ↔ 资源流", stream4: "🕵️ ARGClue → 叙事扩展", stream5: "🧠 LLM 推理 → 生成事件",
+            streams_note: "严格模式 · 确定性传播 · 自适应反馈循环",
+            infra_title: "∞ 面向无限的 Infrastructure",
+            infra_desc: "动态水平扩展 · 实时弹性 · 面向元宇宙和浏览器 MMO 策略的 AI 优先编排。原生支持 React、WebSockets、FastAPI、Three.js 和 Go。",
+            tag1: "🧠 AI 优先内核", tag2: "✨ 多宇宙就绪", tag3: "⚡ 响应式智能体", tag4: "🔒 量子网络安全",
+            audience_title: "🎯 主要构建 — 目标受众",
+            aud1: "AI 应用开发者", aud2: "元宇宙架构师", aud3: "MMO 策略专家", aud4: "多智能体设计师", aud5: "Web3 世界构建者", aud6: "太空技术工程师",
+            stack_title: "⚙️ 技术栈", stack_desc: "运行时层无关 — 云、边缘或本地集群。",
+            mission_title: "✦ 战略使命", mission_desc: "通过新一代 AI、深度学习和高级分析赋能组织。重新定义宇宙运行时边界。",
+            commitment_title: "✦ 绝对承诺", commitment_desc: "量子安全、技术卓越和应用伦理。以诚信和数字韧性推动成功。",
+            cta_title: "⟡ 加入 Nexus ⟡", cta_sub: "加入 AI 原生前沿 · 引领多智能体编排与宇宙模拟",
+            placeholder_name: "宇航员 / 工作室名称", placeholder_email: "量子地址 (邮箱)", placeholder_desc: "描述您的 MMO 策略、元宇宙世界或 AI 项目...", btn_submit: "🚀 部署智能查询",
+            cta_footer: "⚡ 三层 · 类型化模式 · AI 运行时就绪",
+            footer1: "© 2026 T.E.R.S.A.N.E.S.I. — 宇宙工程生命周期的全能工程运行时 | 高级 AI 智能部门",
+            footer2: "🏛️ TERSANESI → 🎮 Cavibara → 🌌 Wellamatores   • AI 原生编排 • 元宇宙 MMO 基础设施",
+            footer_link1: "运行时白皮书", footer_link2: "智能体 SDK", footer_link3: "宇宙状态"
+        }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        const t = translations[lang];
+        if (!t) return;
+        
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.getAttribute('data-key');
+            if (t[key] !== undefined) {
+                if (el.tagName === 'INPUT' && el.getAttribute('placeholder') !== null) {
+                    el.placeholder = t[key];
+                } else if (el.tagName === 'TEXTAREA' && el.getAttribute('placeholder') !== null) {
+                    el.placeholder = t[key];
+                } else {
+                    el.innerHTML = t[key];
+                }
+            }
+        });
+        
+        document.querySelectorAll('.lang-nav a').forEach(a => {
+            if (a.getAttribute('data-lang') === lang) {
+                a.classList.add('active');
+            } else {
+                a.classList.remove('active');
+            }
+        });
+        
+        localStorage.setItem('tersanesi_lang', lang);
+    }
+
+    document.querySelectorAll('.lang-nav a').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const lang = btn.getAttribute('data-lang');
+            if (lang) setLanguage(lang);
+        });
+    });
+
+    const savedLang = localStorage.getItem('tersanesi_lang');
+    if (savedLang && translations[savedLang]) setLanguage(savedLang);
+    else setLanguage('en');
+
+    // form handler
+    const form = document.getElementById('nexusForm');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name')?.value.trim() || 'Pioneer';
+            const email = document.getElementById('email')?.value.trim();
+            const project = document.getElementById('projectDesc')?.value.trim() || 'cosmic project';
+            if (!email) {
+                alert('⟡ Please provide a valid quantum address (email) to initiate AI nexus.');
+                return;
+            }
+            alert(`✨ Transmission received, ${name}.\n\nTERSANESI Runtime registered your request: "${project.substring(0, 70)}".\nOur AI orchestrator will connect within 3 orbital cycles.`);
+            form.reset();
+        });
+    }
+</script>
+
+<script type="module">
+    // QUADRANT 1: Particle system
+    const canvasQ1 = document.getElementById('particleCanvasQ1');
+    const ctxQ1 = canvasQ1.getContext('2d');
+    let w1 = 0, h1 = 0;
+    let particles = [];
+
+    function resizeQ1() {
+        const panel = document.querySelector('.q1');
+        w1 = panel.clientWidth;
+        h1 = panel.clientHeight;
+        canvasQ1.width = w1;
+        canvasQ1.height = h1;
+        initParticlesQ1();
+    }
+
+    class ParticleQ1 {
+        constructor() {
+            this.x = Math.random() * w1;
+            this.y = Math.random() * h1;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = (Math.random() - 0.5) * 0.3;
+            this.speedY = (Math.random() - 0.5) * 0.2 + 0.05;
+            this.color = `rgba(0, 200, 255, ${Math.random() * 0.5 + 0.2})`;
+            this.glow = Math.random() > 0.6;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.y > h1) this.y = 0;
+            if (this.y < 0) this.y = h1;
+            if (this.x > w1) this.x = 0;
+            if (this.x < 0) this.x = w1;
+        }
+        draw() {
+            ctxQ1.beginPath();
+            ctxQ1.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            if (this.glow) ctxQ1.shadowBlur = 5;
+            else ctxQ1.shadowBlur = 1;
+            ctxQ1.shadowColor = '#0af';
+            ctxQ1.fillStyle = this.color;
+            ctxQ1.fill();
+        }
+    }
+
+    function initParticlesQ1(count = 150) {
+        particles = [];
+        for (let i = 0; i < count; i++) particles.push(new ParticleQ1());
+    }
+
+    function animateParticlesQ1() {
+        if (!ctxQ1) return;
+        ctxQ1.clearRect(0, 0, w1, h1);
+        for (let p of particles) { p.update(); p.draw(); }
+        requestAnimationFrame(animateParticlesQ1);
+    }
+
+    const q1Observer = new ResizeObserver(() => resizeQ1());
+    q1Observer.observe(document.querySelector('.q1'));
+    resizeQ1();
+    initParticlesQ1(150);
+    animateParticlesQ1();
+
+    // QUADRANT 2: Three.js Orbital Reef
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const containerQ2 = document.getElementById('three-container-q2');
+    const sceneQ2 = new THREE.Scene();
+    sceneQ2.background = new THREE.Color(0x010418);
+    sceneQ2.fog = new THREE.FogExp2(0x010418, 0.0002);
+
+    const cameraQ2 = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    cameraQ2.position.set(6, 3, 12);
+    cameraQ2.lookAt(0, 0, 0);
+
+    const rendererQ2 = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    rendererQ2.setSize(containerQ2.clientWidth, containerQ2.clientHeight);
+    rendererQ2.shadowMap.enabled = true;
+    containerQ2.appendChild(rendererQ2.domElement);
+
+    const controlsQ2 = new OrbitControls(cameraQ2, rendererQ2.domElement);
+    controlsQ2.enableDamping = true;
+    controlsQ2.autoRotate = true;
+    controlsQ2.autoRotateSpeed = 0.4;
+    controlsQ2.enableZoom = true;
+    controlsQ2.enablePan = false;
+    controlsQ2.target.set(0, 0.5, 0);
+
+    const ambient = new THREE.AmbientLight(0x222244);
+    sceneQ2.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
+    dirLight.position.set(4, 8, 6);
+    sceneQ2.add(dirLight);
+    const backLight = new THREE.PointLight(0x4488ff, 0.5);
+    backLight.position.set(-2, 1, -5);
+    sceneQ2.add(backLight);
+
+    const starFieldGeo = new THREE.BufferGeometry();
+    const starCount = 2000;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+        starPositions[i*3] = (Math.random() - 0.5) * 400;
+        starPositions[i*3+1] = (Math.random() - 0.5) * 300;
+        starPositions[i*3+2] = (Math.random() - 0.5) * 150 - 80;
+    }
+    starFieldGeo.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.7 });
+    const starsField = new THREE.Points(starFieldGeo, starMat);
+    sceneQ2.add(starsField);
+
+    const station = new THREE.Group();
+    const ringMain = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.08, 64, 128), new THREE.MeshStandardMaterial({ color: 0x44aaff, metalness: 0.85, emissive: 0x004466, emissiveIntensity: 0.35 }));
+    station.add(ringMain);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.45, 64, 64), new THREE.MeshStandardMaterial({ color: 0xffaa66, metalness: 0.7, emissive: 0x442200, emissiveIntensity: 0.3 }));
+    station.add(core);
+    for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 1.2), new THREE.MeshStandardMaterial({ color: 0x88ccff }));
+        arm.position.set(Math.cos(angle) * 1.1, Math.sin(angle) * 1.1, 0);
+        arm.rotation.z = angle;
+        station.add(arm);
+    }
+    const panelGeo = new THREE.BoxGeometry(0.5, 0.04, 0.3);
+    for (let i = 0; i < 4; i++) {
+        const ang = (i / 4) * Math.PI * 2;
+        const panel = new THREE.Mesh(panelGeo, new THREE.MeshStandardMaterial({ color: 0x66ccff, metalness: 0.6 }));
+        panel.position.set(Math.cos(ang) * 1.7, Math.sin(ang) * 1.7, 0.1);
+        station.add(panel);
+    }
+    station.position.set(0, 0.2, 0);
+    sceneQ2.add(station);
+
+    const partCount = 400;
+    const partGeo = new THREE.BufferGeometry();
+    const partPos = new Float32Array(partCount * 3);
+    for (let i = 0; i < partCount; i++) {
+        partPos[i*3] = (Math.random() - 0.5) * 4.2;
+        partPos[i*3+1] = (Math.random() - 0.5) * 3.5;
+        partPos[i*3+2] = (Math.random() - 0.5) * 3.5;
+    }
+    partGeo.setAttribute("position", new THREE.BufferAttribute(partPos, 3));
+    const partMat = new THREE.PointsMaterial({ color: 0x44ccff, size: 0.03, transparent: true, opacity: 0.5 });
+    const stationGlow = new THREE.Points(partGeo, partMat);
+    station.add(stationGlow);
+
+    const moonletGeo = new THREE.SphereGeometry(0.28, 32, 32);
+    const moonletMat = new THREE.MeshStandardMaterial({ color: 0xaa9988, roughness: 0.8 });
+    const moonlet = new THREE.Mesh(moonletGeo, moonletMat);
+    sceneQ2.add(moonlet);
+
+    let timeQ2 = 0;
+    function animateQ2() {
+        requestAnimationFrame(animateQ2);
+        timeQ2 += 0.012;
+        station.rotation.y += 0.008;
+        station.rotation.x = Math.sin(timeQ2 * 0.7) * 0.1;
+        station.rotation.z = Math.cos(timeQ2 * 0.5) * 0.08;
+        stationGlow.rotation.y += 0.01;
+        moonlet.position.x = Math.cos(timeQ2) * 2.5;
+        moonlet.position.z = Math.sin(timeQ2 * 1.3) * 2.2;
+        moonlet.position.y = Math.sin(timeQ2 * 1.8) * 0.8;
+        starsField.rotation.y += 0.0005;
+        controlsQ2.update();
+        
+        const width = containerQ2.clientWidth;
+        const height = containerQ2.clientHeight;
+        if (rendererQ2.domElement.width !== width || rendererQ2.domElement.height !== height) {
+            cameraQ2.aspect = width / height;
+            cameraQ2.updateProjectionMatrix();
+            rendererQ2.setSize(width, height);
+        }
+        rendererQ2.render(sceneQ2, cameraQ2);
+    }
+    
+    function resizeQ2() {
+        const w = containerQ2.clientWidth;
+        const h = containerQ2.clientHeight;
+        cameraQ2.aspect = w / h;
+        cameraQ2.updateProjectionMatrix();
+        rendererQ2.setSize(w, h);
+    }
+    const resizeObsQ2 = new ResizeObserver(() => resizeQ2());
+    resizeObsQ2.observe(containerQ2);
+    resizeQ2();
+    animateQ2();
+
+    // QUADRANT 3: mouse parallax
+    const q3Panel = document.querySelector('.q3');
+    const ringPlanet = document.querySelector('.ring-planet');
+    if (q3Panel && ringPlanet) {
+        q3Panel.addEventListener('mousemove', (e) => {
+            const rect = q3Panel.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+            const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+            ringPlanet.style.transform = `translate(-50%, -50%) translate(${mouseX * 12}px, ${mouseY * 12}px)`;
+        });
+    }
+
+    // QUADRANT 4: binary rain
+    const q4Canvas = document.createElement('canvas');
+    const q4Div = document.querySelector('.q4');
+    q4Div.style.position = 'relative';
+    q4Canvas.style.position = 'absolute';
+    q4Canvas.style.top = '0';
+    q4Canvas.style.left = '0';
+    q4Canvas.style.width = '100%';
+    q4Canvas.style.height = '100%';
+    q4Canvas.style.pointerEvents = 'none';
+    q4Canvas.style.zIndex = '5';
+    q4Div.appendChild(q4Canvas);
+    
+    let q4Ctx = q4Canvas.getContext('2d');
+    let q4Width, q4Height;
+    let drops = [];
+    
+    function resizeQ4() {
+        q4Width = q4Div.clientWidth;
+        q4Height = q4Div.clientHeight;
+        q4Canvas.width = q4Width;
+        q4Canvas.height = q4Height;
+        const columnCount = Math.floor(q4Width / 18);
+        drops = new Array(columnCount).fill(1);
+    }
+    
+    function drawBinaryRain() {
+        if (!q4Ctx) return;
+        q4Ctx.fillStyle = 'rgba(3, 3, 15, 0.08)';
+        q4Ctx.fillRect(0, 0, q4Width, q4Height);
+        q4Ctx.fillStyle = '#0cf';
+        q4Ctx.font = `bold ${Math.max(12, q4Width / 45)}px monospace`;
+        for (let i = 0; i < drops.length; i++) {
+            const text = Math.random() < 0.5 ? '0' : '1';
+            const x = i * 18;
+            const y = drops[i] * 18;
+            q4Ctx.fillStyle = `rgba(0, 200, 255, ${0.3 + Math.random() * 0.4})`;
+            q4Ctx.fillText(text, x, y);
+            if (y > q4Height && Math.random() > 0.98) drops[i] = 0;
+            drops[i]++;
+        }
+        requestAnimationFrame(drawBinaryRain);
+    }
+    
+    const q4ResizeObs = new ResizeObserver(() => resizeQ4());
+    q4ResizeObs.observe(q4Div);
+    resizeQ4();
+    drawBinaryRain();
+    
+    const q1Panel = document.querySelector('.q1');
+    const thetaCore = document.querySelector('.theta-core');
+    if (q1Panel && thetaCore) {
+        q1Panel.addEventListener('mousemove', (e) => {
+            const rect = q1Panel.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+            const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+            thetaCore.style.transform = `translate(-50%, -50%) translate(${mouseX * 6}px, ${mouseY * 6}px)`;
+        });
+    }
+    
+    const warpDiv = document.querySelector('.warp-particles');
+    if (warpDiv) {
+        let angle = 0;
+        setInterval(() => {
+            angle += 0.02;
+            warpDiv.style.backgroundPosition = `${angle}px 0px`;
+        }, 50);
+    }
+    
+    console.log("✅ QUADRANT COSMOS ACTIVE + MULTI-LANGUAGE SUPPORT");
+</script>
+</body>
+</html>
